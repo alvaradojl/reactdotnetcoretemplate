@@ -1,6 +1,6 @@
 import React from "react";
 import { isNullOrWhitespace } from "../utilities";
-
+import { Router, withRouter, Link, NavLink, Redirect, Route } from "react-router-dom";
 import createBrowserHistory from "history/createBrowserHistory";
 const newHistory = createBrowserHistory();
 
@@ -26,7 +26,7 @@ displayUserId(id) {
 
 navigateHome() {
     console.log("going home");
-    newHistory.push({pathname: "/home"});
+    withRouter(({history}) => history.push("/"));
 }
  
 render(){ 

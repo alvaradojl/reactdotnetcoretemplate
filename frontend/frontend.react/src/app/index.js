@@ -9,16 +9,17 @@ import { Root } from "./components/Root";
 export class App extends React.Component {
  
     render(){
-        return( 
-            <BrowserRouter>
+        return(  
                 <Switch>    
                     <Route path="/" component={Root} /> 
                 </Switch>
-            </BrowserRouter> 
         );
     }
 }
 
-render(<App />,
+render(
+    <BrowserRouter>
+        <App />  
+    </BrowserRouter>,
     window.document.getElementById("app")
 );

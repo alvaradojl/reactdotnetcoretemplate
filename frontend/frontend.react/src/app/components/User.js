@@ -26,7 +26,7 @@ displayUserId(id) {
 
 navigateHome() {
     console.log("going home");
-    withRouter(({history}) => history.push("/"));
+    this.props.history.push("/home");
 }
  
 render(){ 

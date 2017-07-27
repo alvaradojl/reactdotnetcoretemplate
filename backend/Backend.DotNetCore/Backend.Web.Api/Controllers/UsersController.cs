@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Backend.Web.Api.Models;
 using Backend.Web.Api.ViewModels;
+using System.Threading;
 
 namespace Backend.Web.Api.Controllers
 {
@@ -36,7 +37,7 @@ namespace Backend.Web.Api.Controllers
             var userFound = _userRepository.Get(username);
             if (userFound == null)
             {
-                return NotFound();
+                return NotFound(new OperationResponse() { IsValid = false, Errors = new string[] { "User does not exists." } });
             }
             return Ok(userFound);
         }
@@ -45,9 +46,15 @@ namespace Backend.Web.Api.Controllers
         [HttpPost]
         public ActionResult Post([FromBody]UserVM model)
         {
+
+            Thread.Sleep(4000);
+
             if (ModelState.IsValid)
             {
-                if (_userRepository.Get(model.Username) != null) return BadRequest(new { message = "The username already exists." });
+                if (_userRepository.Get(model.Username) != null)
+                {
+                    return BadRequest(new OperationResponse() { IsValid = false, Errors = new string[] { "User already exists." } });
+                }
 
                 var parsedUser = new Models.User() { Username = model.Username, Email = model.Email, Password = model.Password, PasswordConfirmation = model.PasswordConfirmation, Timezone = model.Timezone };
 
@@ -79,7 +86,7 @@ namespace Backend.Web.Api.Controllers
             {
                 if (_userRepository.Get(username) == null)
                 {
-                    return NotFound();
+                    return NotFound(new OperationResponse() { IsValid = false, Errors = new string[] { "User does not exists." } });
                 }
 
                 var updatedUser = new Models.User() { Username = username, Email = model.Email, Password = model.Password, PasswordConfirmation = model.PasswordConfirmation, Timezone = model.Timezone };

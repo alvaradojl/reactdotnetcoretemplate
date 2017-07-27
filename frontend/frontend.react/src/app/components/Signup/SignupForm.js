@@ -3,6 +3,9 @@ import timezones from "./../../data/timezones";
 import map from "lodash/map";
 import PropTypes from "prop-types";
 import classnames from "classnames";
+import isNullOrWhitespace from "./../../Utilities";
+import isEmpty from "lodash/isEmpty";
+import Validator from "validator";
 
 export default class SignupForm extends React.Component{
 
@@ -14,11 +17,15 @@ export default class SignupForm extends React.Component{
             password:"",
             passwordConfirmation:"",
             timezone:"",
-            errors: {}
+            errors: {},
+            success:"",
+            isLoading:false
         }
 //console.log("props SignupForm: " + this.props.userSignupRequest);
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.validateInput = this.validateInput.bind(this);
+        this.isValid= this.isValid.bind(this);
     }
 
     onChange(e){
@@ -27,30 +34,130 @@ export default class SignupForm extends React.Component{
         })
     }
 
+    validateInput(data){
+        let errors = [];
+
+        if(Validator.isEmpty(data.username)){
+            errors.push("username is required.");
+        }
+
+        if(Validator.isEmpty(data.email)){
+            errors.push("email is required.");
+        }
+        else{ 
+            if(!Validator.isEmail(data.email)){
+                errors.push("not a valid email.");
+            }
+        }
+
+        if(Validator.isEmpty(data.password)){
+            errors.push("password is required.");
+        }
+
+        if(Validator.isEmpty(data.passwordConfirmation)){
+            errors.push("passwordConfirmation is required.");
+        }
+        else{
+            if(!Validator.equals(data.password, data.passwordConfirmation)){
+                errors.push("Passwords must match.");
+            }
+        }
+
+        if(Validator.isEmpty(data.timezone)){
+            errors.push("timezone is required.");
+        }
+ 
+     
+
+        //TODO: more validations
+
+        return { errors, 
+            isValid: isEmpty(errors) 
+        }
+    }
+
+    isValid(){
+        const { errors, isValid } = this.validateInput(this.state);
+
+        if(!isValid){
+            this.setState({errors});
+        }
+
+        return isValid;
+    }
+
     onSubmit(e){
         e.preventDefault();
-       // console.log("this.props.userSignupRequest(this.state);");
-       this.props.userSignupRequest(this.state).then(function(response){
-            console.log(response.data);
-            console.log(response.status);
-        }).catch(error=>{
-            console.log("errors found: " + error.response.data.errors);
-            this.setState({errors:error.response.data.errors});
-        });
+        if(this.isValid()){
+            
+            let userToSubmit = {
+                username:this.state.username, 
+                email:this.state.email, 
+                password:this.state.password, 
+                passwordConfirmation:this.state.passwordConfirmation,
+                timezone: this.state.timezone
+            };
 
+            this.setState({errors:{}, isLoading:true});
 
+           var self = this; //necessary to call 'this' within the axios callback
+
+        this.props.userSignupRequest(userToSubmit)
+            .then(response => {
+               
+                self.props.addMessage({type:"success", text:"You signed up succesfully. Welcome"});
+
+                // console.log(response.data);
+                // console.log(response.status);
+
+                // let newState = {
+                //     username:"", 
+                //     email:"", 
+                //     password:"", 
+                //     passwordConfirmation:"",
+                //     timezone: "",
+                //     errors:{},
+                //     success:"User has been registered.",
+                //     isLoading:false
+                // };
+
+               // self.setState(newState);
+ 
+            }
+        ).catch(result=>{ 
+            if(result.response){
+                console.log("ended up in catch with error.response: " + JSON.stringify(result.response.data));
+                this.setState({errors:result.response.data.errors, isLoading:false}); 
+            }
+               
+            }
+        ); 
+        }
     }
 
     render(){
 
     const options = map(timezones, (val,key)=> <option key={val} value={val}>{key}</option>);
 
+    const errorsRetrieved = map(this.state.errors, (item, index)=> <li key={index}>{item}</li>);
+
+    const errorMessage = (
+        <div className={classnames({"alert alert-danger visible" : this.state.errors.length>0},{"collapsed": this.state.errors.length<=0})}>
+            {this.state.errors.length>0 ? <ul>{errorsRetrieved}</ul> : <span/>} 
+        </div>
+    );
+
+    const successMessage = (
+        <div className={classnames({"alert alert-success visible" : this.state.success.length>0}, {"collapsed": this.state.success.length<=0})}>
+            <span>{this.state.success}</span>
+        </div>
+    );
+ 
         return(
             <form onSubmit={this.onSubmit}>
                 <h1>Join our community</h1>
-                <div className="help-block">
-                   <ul className="help-block">{this.state.errors.map((item)=>{ <li>{item}</li> })}</ul>
-                </div>
+                {errorMessage}
+                {successMessage}
                 <div className="form-group">
                     <label className="control-label">Username</label>
                     <input type="text" name="username" className="form-control" value={this.state.username} onChange={this.onChange}/>
@@ -84,9 +191,8 @@ export default class SignupForm extends React.Component{
 
                 </div>
 
-                
                 <div className="form-group">
-                    <button className="btn btn-primary btn-lg">Sign up</button>
+                    <button disabled={this.state.isLoading} className="btn btn-primary btn-lg">Sign up</button>
                 </div>
             </form>
         );
@@ -94,5 +200,6 @@ export default class SignupForm extends React.Component{
 }
 
 SignupForm.propTypes = {
-    userSignupRequest: PropTypes.func.isRequired
+    userSignupRequest: PropTypes.func.isRequired,
+    addMessage: PropTypes.func.isRequired
 }

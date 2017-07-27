@@ -1,4 +1,4 @@
-export function isNullOrWhitespace( input ) {
+export default function isNullOrWhitespace( input ) {
 
     if (typeof input === 'undefined' || input == null) return true;
 

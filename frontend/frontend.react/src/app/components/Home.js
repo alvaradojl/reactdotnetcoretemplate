@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types"; 
 
-export class Home extends React.Component{
+export default class Home extends React.Component{
 
     constructor(props){
         super();
@@ -53,6 +53,7 @@ export class Home extends React.Component{
     }
 
 }
+
 
 Home.propTypes = {
     initialUsername:PropTypes.string,

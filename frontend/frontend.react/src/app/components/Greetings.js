@@ -1,6 +1,6 @@
 import React from "react";
 
-export class Greetings extends React.Component{
+export default class Greetings extends React.Component{
 
     render(){
         return(
@@ -8,4 +8,3 @@ export class Greetings extends React.Component{
         );
     }
 }
- 

@@ -1,26 +1,18 @@
 import React  from "react";
 import SignupForm from "./SignupForm";
 import {connect}  from "react-redux";
-import userSignupRequest  from "./../../actions/signupActions";
 import PropTypes from "prop-types";
-import addMessage from "./../../actions/tempActions";
+import {addMessageDispatcher, removeMessageDispatcher } from "./../../actions/FlashMessagesActions";
+import userSignupRequestDispatcher  from "./../../actions/signupActions";
 
 export class SignupPage extends React.Component{
 
-constructor(props){
-    super(props);
-  //  console.log(this.props);
-
-}
-
     render(){
-
-      
-
+ 
         return(
             <div className="row">
                 <div className="col-md-6 col-md-offset-2">
-                    <SignupForm userSignupRequest={userSignupRequest} addMessage={addMessage} />
+                    <SignupForm userSignupRequest={this.props.userSignupRequest} addMessage={this.props.addMessage} removeMessage={this.props.removeMessage}  />
                 </div>
             </div>
         );
@@ -29,29 +21,29 @@ constructor(props){
  
 SignupPage.propTypes = {
     userSignupRequest: PropTypes.func.isRequired,
-    addMessage : PropTypes.func.isRequired
+    addMessage : PropTypes.func.isRequired,
+    removeMessage : PropTypes.func.isRequired
 }
+ 
 
 const mapStateToProps = (state) =>{
     return {
-        id: state.id,
-        type: state.type,
-        text:state.text
+        messages:state.messages
     }
 }
 
 const mapDispatchToProps = (dispatch) =>{
-    return{
-        userSignupRequest: (userData) => {
-            userSignupRequest(userData);
+    return{ 
+        addMessage: (text) =>{
+            dispatch(addMessageDispatcher(text));
         },
-        addMessage: (message) =>{
-            addMessage(message);
+        removeMessage: (id) => {
+            dispatch(removeMessageDispatcher(id));
+        },
+        userSignupRequest: (userData) =>{
+            dispatch(userSignupRequestDispatcher(userData))
         }
     }
 }
 
-
 export default connect(mapStateToProps, mapDispatchToProps)(SignupPage);
-//console.log("connectedSignupPage:" + ConnectedSignupPage);
-//export default ConnectedSignupPage;

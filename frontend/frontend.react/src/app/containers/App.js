@@ -1,26 +1,14 @@
 import React from "react";
 import { render } from "react-dom"; 
 import { BrowserRouter, Router, Route, Switch, Redirect } from "react-router-dom";
-
-
 import createBrowserHistory from "history/createBrowserHistory";
 import { Provider, connect } from "react-redux";
-//import { mystore } from "./store";
-//import { setName, setAge } from "./actions/userActions";
-//import { addNumber, subtractNumber } from "./actions/mathActions";
-//import { mathReducer } from "./reducers/mathReducer";
-//import userReducer  from "./reducers/userReducer";
-
-//import { createStore, combineReducers, applyMiddleware} from "redux";
-
-
 import  "./../components/Home";
-//import { User }  from "./../components/User";
 import Header from "./../components/Header";
 import  SignupPage from "./../components/Signup/SignupPage";
 import Greetings from   "./../components/Greetings";
 import NoMatch from  "./../components/NoMatch";
-
+import FlashMessagesList from "./../components/Flash/FlashMessagesList";
 const newHistory = createBrowserHistory();
  
 export default class App extends React.Component {
@@ -33,6 +21,9 @@ export default class App extends React.Component {
                 <div className="col-xs-10 col-xs-offset-1">
                     <Header/>
                 </div>
+            </div>
+            <div className="row">
+                <FlashMessagesList />
             </div>
             <div className="row">
                 <div className="col-xs-10 col-xs-offset-1">  

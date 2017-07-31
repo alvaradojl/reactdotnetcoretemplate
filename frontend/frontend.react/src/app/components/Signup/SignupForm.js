@@ -5,9 +5,10 @@ import PropTypes from "prop-types";
 import classnames from "classnames";
 import isNullOrWhitespace from "./../../Utilities";
 import isEmpty from "lodash/isEmpty";
-import Validator from "validator";
+import Validator from "validator"; 
+import mystore from "./../../store.js";
 
-export default class SignupForm extends React.Component{
+export class SignupForm extends React.Component{
 
     constructor(props){
         super(props);
@@ -21,6 +22,7 @@ export default class SignupForm extends React.Component{
             success:"",
             isLoading:false
         }
+
 //console.log("props SignupForm: " + this.props.userSignupRequest);
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
@@ -87,52 +89,59 @@ export default class SignupForm extends React.Component{
     }
 
     onSubmit(e){
+       
         e.preventDefault();
+
         if(this.isValid()){
-            
-            let userToSubmit = {
-                username:this.state.username, 
-                email:this.state.email, 
-                password:this.state.password, 
+             
+            this.setState(
+                { 
+                errors:{},
+                isLoading:true
+                }
+            )
+ 
+            var self = this; //necessary, to call 'this' within the axios callback
+
+            let registrationData = { 
+                username:this.state.username,
+                email:this.state.email,
+                password:this.state.password,
                 passwordConfirmation:this.state.passwordConfirmation,
-                timezone: this.state.timezone
+                timezone:this.state.timezone,
+                
             };
 
-            this.setState({errors:{}, isLoading:true});
+            this.props.userSignupRequest(registrationData)
+            .then(response => { 
 
-           var self = this; //necessary to call 'this' within the axios callback
+                let newState = {
+                        username:"", 
+                        email:"", 
+                        password:"", 
+                        passwordConfirmation:"",
+                        timezone: "",
+                        errors:{},
+                        success:"User has been registered.",
+                        isLoading:false
+                    };
 
-        this.props.userSignupRequest(userToSubmit)
-            .then(response => {
-               
-                self.props.addMessage({type:"success", text:"You signed up succesfully. Welcome"});
+                self.setState(newState);
 
-                // console.log(response.data);
-                // console.log(response.status);
+                //this.context.router.push('/');
 
-                // let newState = {
-                //     username:"", 
-                //     email:"", 
-                //     password:"", 
-                //     passwordConfirmation:"",
-                //     timezone: "",
-                //     errors:{},
-                //     success:"User has been registered.",
-                //     isLoading:false
-                // };
-
-               // self.setState(newState);
- 
+              self.props.addMessage({type:"ADD_MESSAGE", text:"You signed up succesfully. Welcome"}); 
+            
             }
-        ).catch(result=>{ 
-            if(result.response){
-                console.log("ended up in catch with error.response: " + JSON.stringify(result.response.data));
-                this.setState({errors:result.response.data.errors, isLoading:false}); 
+            ).catch(result=>{ 
+                if(result.response){
+                    console.log("ended up in catch with error.response: " + JSON.stringify(result.response.data));
+                    this.setState({errors:result.response.data.errors, isLoading:false}); 
+                }
+                
+                }
+            ); 
             }
-               
-            }
-        ); 
-        }
     }
 
     render(){
@@ -199,7 +208,14 @@ export default class SignupForm extends React.Component{
     }
 }
 
+export default SignupForm;
+
+SignupForm.contextTypes = {
+    router: PropTypes.object.isRequired
+}
+
 SignupForm.propTypes = {
     userSignupRequest: PropTypes.func.isRequired,
-    addMessage: PropTypes.func.isRequired
+    addMessage: PropTypes.func.isRequired,
+    removeMessage: PropTypes.func.isRequired
 }

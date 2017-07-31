@@ -1,22 +1,14 @@
+import flashMessagesReducer from "./reducers/FlashMessagesReducer";
+import { createStore, combineReducers, applyMiddleware, compose } from "redux";
+import thunk from "redux-thunk";
+import { createLogger } from "redux-logger";
 
-//import { mathReducer } from "./reducers/mathReducer";
-//import { userReducer } from "./reducers/userReducer";
-// import { createLogger } from "redux-logger";
-// import { createStore, combineReducers, applyMiddleware} from "redux";
-// import thunk from "react-thunk";
+const logger = createLogger({
+  // ...options
+});
 
-// const logger = createLogger({
-//   // ...options
-// });
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-// export const mystore = createStore(
-//     (state = {}) => state, 
-//     applyMiddleware(thunk)
-// );
+export const mystore = createStore(flashMessagesReducer, composeEnhancers(applyMiddleware(thunk,logger)));
 
-
-// export default mystore = createStore(
-//     combineReducers({userReducer}),
-//     {},
-//     applyMiddleware(logger)
-// );
+export default mystore;

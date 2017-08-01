@@ -1,10 +1,10 @@
 
-export function addMessageDispatcher(text){
+export function addMessageDispatcher(message){
 
 
     let result ={
             type:'ADD_MESSAGE',
-            text
+            message
         };
 
 

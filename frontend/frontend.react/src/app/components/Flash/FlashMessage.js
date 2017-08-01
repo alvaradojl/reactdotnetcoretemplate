@@ -14,11 +14,12 @@ onClick(){
 }
 
     render(){
-        const { id, type, text } = this.props.message;
+       
+
         return (
-            <div className={classnames("alert",{"alert-success": type === 'success'},{"alert-danger": type === 'error'})}>
+            <div className={classnames("alert",{"alert-success": this.props.message.type === 'success'},{"alert-danger": this.props.message.type === 'error'})}>
                 <button onClick={this.onClick} className="close"><span>&times;</span></button>
-                {text}
+                {this.props.message.text}
             </div>
         );
     }

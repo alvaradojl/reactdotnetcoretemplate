@@ -1,7 +1,7 @@
 import shortid from "shortid";
 import findIndex from "lodash/findIndex";
 
-export function flashMessagesReducer (state = [], action){ 
+export function messagesReducer (state = [], action){ 
   
 switch(action.type){
 
@@ -9,8 +9,8 @@ switch(action.type){
         return [ 
                 ...state,{
                     id:shortid.generate(),
-                    type:action.type,
-                    text:action.text}
+                    type:action.message.type,
+                    text:action.message.text}
             ];
         
     case "DELETE_MESSAGE":
@@ -30,5 +30,5 @@ switch(action.type){
 
 }
 
-export default flashMessagesReducer;
+export default messagesReducer;
  

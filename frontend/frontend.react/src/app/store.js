@@ -1,7 +1,9 @@
-import flashMessagesReducer from "./reducers/FlashMessagesReducer";
+
 import { createStore, combineReducers, applyMiddleware, compose } from "redux";
 import thunk from "redux-thunk";
 import { createLogger } from "redux-logger";
+import rootReducer from "./reducers/rootReducer";
+
 
 const logger = createLogger({
   // ...options
@@ -9,6 +11,6 @@ const logger = createLogger({
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-export const mystore = createStore(flashMessagesReducer, composeEnhancers(applyMiddleware(thunk,logger)));
+export const mystore = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk,logger)));
 
 export default mystore;

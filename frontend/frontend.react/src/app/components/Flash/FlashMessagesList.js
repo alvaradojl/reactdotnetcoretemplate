@@ -3,12 +3,12 @@ import PropTypes from "prop-types";
 import FlashMessage from "./FlashMessage";
 import { connect } from "react-redux";
 import map from "lodash/map";
-import {deleteMessageDispatcher } from "./../../actions/FlashMessagesActions";
+import {deleteMessageDispatcher } from "./../../actions/MessagesActions";
 
 export class FlashMessagesList extends React.Component{
     render(){ 
             const messages = map(this.props.messages, (message, index) => 
-            <FlasMessage key={message.id} message={message} deleteMessage={this.props.deleteMessage} />
+            <FlashMessage key={message.id} message={message} deleteMessage={this.props.deleteMessage} />
         );
 
         return (
@@ -18,7 +18,6 @@ export class FlashMessagesList extends React.Component{
 }
 
 FlashMessagesList.propTypes = {
-    messages:PropTypes.array.isRequired,
     deleteMessage : PropTypes.func.isRequired
 }
 
@@ -33,8 +32,8 @@ const mapDispatchToProps = (dispatch) =>{
         addMessage: (text) =>{
             dispatch(addMessageDispatcher(text));
         },
-        removeMessage: (id) => {
-            dispatch(removeMessageDispatcher(id));
+        deleteMessage: (id) => {
+            dispatch(deleteMessageDispatcher(id));
         }
         
     }

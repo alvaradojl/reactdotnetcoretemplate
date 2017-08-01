@@ -23,7 +23,7 @@ export class SignupForm extends React.Component{
             isLoading:false
         }
 
-//console.log("props SignupForm: " + this.props.userSignupRequest);
+        //console.log("props SignupForm: " + this.props.userSignupRequest);
         this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.validateInput = this.validateInput.bind(this);
@@ -111,36 +111,21 @@ export class SignupForm extends React.Component{
                 timezone:this.state.timezone,
                 
             };
+ 
+            this.setState({isLoading:true});
+ 
+            this.props.registerUser(registrationData);
 
-            this.props.userSignupRequest(registrationData)
-            .then(response => { 
-
-                let newState = {
-                        username:"", 
-                        email:"", 
-                        password:"", 
-                        passwordConfirmation:"",
-                        timezone: "",
-                        errors:{},
-                        success:"User has been registered.",
-                        isLoading:false
-                    };
-
-                self.setState(newState);
-
-                //this.context.router.push('/');
-
-              self.props.addMessage({type:"ADD_MESSAGE", text:"You signed up succesfully. Welcome"}); 
+            console.log("user properties: " + JSON.stringify(this.props.user));
+             
+            this.setState({isLoading:false});
             
-            }
-            ).catch(result=>{ 
-                if(result.response){
-                    console.log("ended up in catch with error.response: " + JSON.stringify(result.response.data));
-                    this.setState({errors:result.response.data.errors, isLoading:false}); 
-                }
-                
-                }
-            ); 
+            let newMessage = {type:"success", text:"You signed up succesfully. Welcome"};
+
+            this.props.addMessage(newMessage); 
+             
+            this.context.router.history.push('/');
+ 
             }
     }
 
@@ -150,23 +135,23 @@ export class SignupForm extends React.Component{
 
     const errorsRetrieved = map(this.state.errors, (item, index)=> <li key={index}>{item}</li>);
 
-    const errorMessage = (
-        <div className={classnames({"alert alert-danger visible" : this.state.errors.length>0},{"collapsed": this.state.errors.length<=0})}>
-            {this.state.errors.length>0 ? <ul>{errorsRetrieved}</ul> : <span/>} 
-        </div>
-    );
+    // const errorMessage = (
+    //     <div className={classnames({"alert alert-danger visible" : this.state.errors.length>0},{"collapsed": this.state.errors.length<=0})}>
+    //         {this.state.errors.length>0 ? <ul>{errorsRetrieved}</ul> : <span/>} 
+    //     </div>
+    // );
 
-    const successMessage = (
-        <div className={classnames({"alert alert-success visible" : this.state.success.length>0}, {"collapsed": this.state.success.length<=0})}>
-            <span>{this.state.success}</span>
-        </div>
-    );
+    // const successMessage = (
+    //     <div className={classnames({"alert alert-success visible" : this.state.success.length>0}, {"collapsed": this.state.success.length<=0})}>
+    //         <span>{this.state.success}</span>
+    //     </div>
+    // );
  
         return(
             <form onSubmit={this.onSubmit}>
                 <h1>Join our community</h1>
-                {errorMessage}
-                {successMessage}
+                {/* {errorMessage}
+                {successMessage} */}
                 <div className="form-group">
                     <label className="control-label">Username</label>
                     <input type="text" name="username" className="form-control" value={this.state.username} onChange={this.onChange}/>
@@ -215,7 +200,7 @@ SignupForm.contextTypes = {
 }
 
 SignupForm.propTypes = {
-    userSignupRequest: PropTypes.func.isRequired,
+    registerUser: PropTypes.func.isRequired,
     addMessage: PropTypes.func.isRequired,
-    removeMessage: PropTypes.func.isRequired
+    user:PropTypes.object.isRequired
 }

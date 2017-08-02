@@ -8,9 +8,9 @@ export function userReducer (state = {}, action){
 switch(action.type){
 
     case "USER_REGISTER":
-        // var config = {
-        //     headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
-        // };
+        var config = {
+            headers: {'Accept': 'application/json', 'Content-Type': 'application/json'}
+        };
     //   Promise.all([axios.post('http://localhost:60868/api/users/', state, config)
     //     .then(response => 
     //         {
@@ -39,7 +39,7 @@ switch(action.type){
             timezone:action.registrationData.timezone,
             errors:[],
             success:"registration has been succesful",
-            isLoading:false 
+            isRegistering:true 
         };
         
     default:

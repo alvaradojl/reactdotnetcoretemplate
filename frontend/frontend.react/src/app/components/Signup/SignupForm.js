@@ -7,6 +7,9 @@ import isNullOrWhitespace from "./../../Utilities";
 import isEmpty from "lodash/isEmpty";
 import Validator from "validator"; 
 import mystore from "./../../store.js";
+import {connect}  from "react-redux"; 
+//import {addMessageDispatcher } from "./../../actions/MessagesActions";
+import {register}  from "./../../actions/RegisterActions";
 
 export class SignupForm extends React.Component{
 
@@ -79,13 +82,14 @@ export class SignupForm extends React.Component{
     }
 
     isValid(){
-        const { errors, isValid } = this.validateInput(this.state);
+        // const { errors, isValid } = this.validateInput(this.state);
 
-        if(!isValid){
-            this.setState({errors});
-        }
+        // if(!isValid){
+        //     this.setState({errors});
+        // }
 
-        return isValid;
+        // return isValid;
+        return true;
     }
 
     onSubmit(e){
@@ -94,37 +98,37 @@ export class SignupForm extends React.Component{
 
         if(this.isValid()){
              
-            this.setState(
-                { 
-                errors:{},
-                isLoading:true
-                }
-            )
- 
-            var self = this; //necessary, to call 'this' within the axios callback
-
+            this.setState({errors:{},isLoading:true});
+             
             let registrationData = { 
                 username:this.state.username,
                 email:this.state.email,
                 password:this.state.password,
                 passwordConfirmation:this.state.passwordConfirmation,
-                timezone:this.state.timezone,
-                
+                timezone:this.state.timezone
             };
  
-            this.setState({isLoading:true});
- 
-            this.props.registerUser(registrationData);
+            this.props.register(registrationData) 
+            .then(response => { 
+                console.log("the new user has been registered as: " + JSON.stringify(response.data));
 
-            console.log("user properties: " + JSON.stringify(this.props.user));
-             
+                mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have signed in"}});
+
+            })
+            .catch(result=>{ 
+                if(result.response){
+                    console.log("ended up in catch with error.response.data: " + JSON.stringify(result.response.data));
+                    this.setState({ isLoading:false });
+                }   
+            });
+ 
             this.setState({isLoading:false});
             
-            let newMessage = {type:"success", text:"You signed up succesfully. Welcome"};
+          //  let newMessage = {type:"success", text:"You signed up succesfully. Welcome"};
 
-            this.props.addMessage(newMessage); 
+        //    this.props.addMessage(newMessage); 
              
-            this.context.router.history.push('/');
+         //   this.context.router.history.push('/');
  
             }
     }
@@ -134,24 +138,10 @@ export class SignupForm extends React.Component{
     const options = map(timezones, (val,key)=> <option key={val} value={val}>{key}</option>);
 
     const errorsRetrieved = map(this.state.errors, (item, index)=> <li key={index}>{item}</li>);
-
-    // const errorMessage = (
-    //     <div className={classnames({"alert alert-danger visible" : this.state.errors.length>0},{"collapsed": this.state.errors.length<=0})}>
-    //         {this.state.errors.length>0 ? <ul>{errorsRetrieved}</ul> : <span/>} 
-    //     </div>
-    // );
-
-    // const successMessage = (
-    //     <div className={classnames({"alert alert-success visible" : this.state.success.length>0}, {"collapsed": this.state.success.length<=0})}>
-    //         <span>{this.state.success}</span>
-    //     </div>
-    // );
  
         return(
             <form onSubmit={this.onSubmit}>
-                <h1>Join our community</h1>
-                {/* {errorMessage}
-                {successMessage} */}
+                <h1>Join our community</h1> 
                 <div className="form-group">
                     <label className="control-label">Username</label>
                     <input type="text" name="username" className="form-control" value={this.state.username} onChange={this.onChange}/>
@@ -193,14 +183,33 @@ export class SignupForm extends React.Component{
     }
 }
 
-export default SignupForm;
+const mapStateToProps = (state) =>{
+    return {
+        messages:state.messages,
+        user:state.user
+    }
+}
+
+// const mapDispatchToProps = (dispatch) =>{
+//     return{ 
+//         addMessage: (text) =>{
+//             dispatch(addMessageDispatcher(text));
+//         },
+   
+//         registerUser: (userData) =>{
+//             dispatch(registerUserDispatcher(userData))
+//         }
+//     }
+// }
+
+export default connect(mapStateToProps, {register})(SignupForm);
 
 SignupForm.contextTypes = {
     router: PropTypes.object.isRequired
 }
 
 SignupForm.propTypes = {
-    registerUser: PropTypes.func.isRequired,
-    addMessage: PropTypes.func.isRequired,
-    user:PropTypes.object.isRequired
+    register: PropTypes.func.isRequired
+ //   addMessage: PropTypes.func.isRequired 
 }
+

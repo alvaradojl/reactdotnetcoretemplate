@@ -9,6 +9,7 @@ import Greetings from   "./../components/Greetings";
 import NoMatch from  "./../components/NoMatch";
 import FlashMessagesList from "./../components/Flash/FlashMessagesList";
 import { addMessageDispatcher, deleteMessageDispatcher } from "./../actions/MessagesActions";
+import LoginPage from "./../components/Login/LoginPage";
 
 const newHistory = createBrowserHistory();
  
@@ -34,6 +35,7 @@ export class App extends React.Component {
                     <Route exact path="/home" component={Greetings}/>
                     <Route exact path="/greetings" component={Greetings}/>
                     <Route exact path="/signup" component={SignupPage}/> 
+                    <Route exact path="/login" component={LoginPage}/>
                 </div>
             </div>
         </div>

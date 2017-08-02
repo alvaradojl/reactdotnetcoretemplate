@@ -1,10 +1,15 @@
 export function registerUserDispatcher(data){
- 
-    let result ={
+  
+    return {
             type:"USER_REGISTER",
             registrationData:data
         };
-
-
-    return result;
 }
+
+export function receiveNewlyRegisteredUserDispatcher(data){
+    return {
+            type:"USER_RECEIVE_NEWLY_REGISTERED",
+            registrationData:data
+        };
+}
+

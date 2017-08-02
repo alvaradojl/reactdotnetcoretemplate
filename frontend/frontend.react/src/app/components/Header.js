@@ -13,6 +13,7 @@ export default class Header extends React.Component{
                     <div className="collapse navbar-collapse">
                         <ul className="nav navbar-nav navbar-right">
                             <li><NavLink activeStyle={{fontWeight: 'bold', color: 'red'}}  to="/signup">Sign Up</NavLink></li>
+                            <li><NavLink activeStyle={{fontWeight: 'bold', color: 'red'}}  to="/login">Login</NavLink></li>
                         </ul>
 
                     </div>

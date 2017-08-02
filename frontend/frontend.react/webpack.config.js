@@ -6,6 +6,9 @@ var SRC_DIR = path.resolve(__dirname,"src");
 
 var config = {
     devtool: "eval-source-map",
+    devServer: {
+        historyApiFallback: true
+    },
     entry: SRC_DIR + "/app/index.js",
     output:{
         path: DIST_DIR + "/app",

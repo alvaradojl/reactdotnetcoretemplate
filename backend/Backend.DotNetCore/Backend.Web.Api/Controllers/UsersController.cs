@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Backend.Web.Api.Models;
 using Backend.Web.Api.ViewModels;
 using System.Threading;
+using Backend.Web.Api.Dtos;
 
 namespace Backend.Web.Api.Controllers
 {
@@ -32,37 +33,63 @@ namespace Backend.Web.Api.Controllers
 
         // GET: api/Users/5
         [HttpGet("{username}", Name = "Get")]
-        public ActionResult Get(string username)
+        public ActionResult Get(string identifier)
         {
-            var userFound = _userRepository.Get(username);
-            if (userFound == null)
+            var userFoundByUsername = _userRepository.GetByUsername(identifier);
+           
+            if (userFoundByUsername != null)
             {
-                return NotFound(new OperationResponse() { IsValid = false, Errors = new string[] { "User does not exists." } });
+                return Ok(userFoundByUsername);
             }
-            return Ok(userFound);
+            else
+            {
+                var userFoundByEmail = _userRepository.GetByEmail(identifier);
+
+                if (userFoundByEmail != null)
+                {
+                    return Ok(userFoundByEmail);
+                }
+                else
+                {
+                    return NotFound(new OperationResponse() { IsValid = false, Errors = new string[] { "User does not exists." } });
+                }
+            }
+           
         }
         
         // POST: api/Users
         [HttpPost]
-        public ActionResult Post([FromBody]UserVM model)
+        public ActionResult Post([FromBody]RegisterUserVM model)
         {
 
             Thread.Sleep(4000);
 
             if (ModelState.IsValid)
             {
-                if (_userRepository.Get(model.Username) != null)
+                if (_userRepository.GetByUsername(model.Username) != null)
                 {
-                    return BadRequest(new OperationResponse() { IsValid = false, Errors = new string[] { "User already exists." } });
+                    return BadRequest(new OperationResponse() { IsValid = false, Errors = new string[] { "Username already exists." } });
                 }
 
-                var parsedUser = new Models.User() { Username = model.Username, Email = model.Email, Password = model.Password, PasswordConfirmation = model.PasswordConfirmation, Timezone = model.Timezone };
+                if(_userRepository.GetByEmail(model.Email) != null)
+                {
+                    return BadRequest(new OperationResponse() { IsValid = false, Errors = new string[] { "Email already exists." } });
+                }
 
-                _userRepository.Add(parsedUser);
+                var parsedUser = new UserDto() { Username = model.Username, Email = model.Email, ClearTextPassword = model.Password, Timezone = model.Timezone };
+                try
+                {
+                    _userRepository.Add(parsedUser);
 
-                string newResourceUri = string.Format("/api/users/{0}", model.Username);
+                    string newResourceUri = string.Format("/api/users/{0}", model.Username);
 
-                return Created(newResourceUri, parsedUser);
+                    return Created(newResourceUri, parsedUser);
+                }
+                catch
+                {
+                    return StatusCode(500, new { message = "error while attempting to add the user." });
+                }
+                
             }
             else
             {
@@ -79,17 +106,17 @@ namespace Backend.Web.Api.Controllers
         
         // PUT: api/Users/5
         [HttpPut("{username}")]
-        public ActionResult Put(string username, [FromBody]UserVM model)
+        public ActionResult Put(string username, [FromBody]RegisterUserVM model)
         {
 
             if (ModelState.IsValid)
             {
-                if (_userRepository.Get(username) == null)
+                if (_userRepository.GetByUsername(username) == null)
                 {
                     return NotFound(new OperationResponse() { IsValid = false, Errors = new string[] { "User does not exists." } });
                 }
 
-                var updatedUser = new Models.User() { Username = username, Email = model.Email, Password = model.Password, PasswordConfirmation = model.PasswordConfirmation, Timezone = model.Timezone };
+                var updatedUser = new UserDto() { Username = username, Email = model.Email, ClearTextPassword = model.Password, Timezone = model.Timezone };
 
                 _userRepository.Update(updatedUser);
 
@@ -113,7 +140,7 @@ namespace Backend.Web.Api.Controllers
         public ActionResult Delete(string username)
         {
            
-            if (_userRepository.Get(username) == null)
+            if (_userRepository.GetByUsername(username) == null)
             {
                 return NotFound();
             }

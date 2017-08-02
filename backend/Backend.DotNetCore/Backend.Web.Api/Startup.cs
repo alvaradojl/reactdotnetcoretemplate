@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Backend.Web.Api.Services;
+using Backend.Web.Api.Configuration;
 
 namespace Backend.Web.Api
 {
@@ -27,9 +29,11 @@ namespace Backend.Web.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
-        
+
+            services.Configure<MySettings>(Configuration);
+             
             services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddTransient<IPasswordService, PasswordService>();
 
             //Use this policy before MVC
             services.AddCors(options => {

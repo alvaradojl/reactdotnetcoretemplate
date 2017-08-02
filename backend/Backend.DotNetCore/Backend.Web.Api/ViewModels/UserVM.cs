@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Backend.Web.Api.ViewModels
 {
-    public class UserVM
+    public class RegisterUserVM
     {
         [Required(AllowEmptyStrings =false)] 
         public string Username { get; set; }

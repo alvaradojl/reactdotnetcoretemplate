@@ -112,6 +112,14 @@ export class SignupForm extends React.Component{
             .then(response => { 
                 console.log("the new user has been registered as: " + JSON.stringify(response.data));
 
+                this.setState({
+                    username:"",
+                    email:"",
+                    password:"",
+                    passwordConfirmation:"",
+                    timezone:""
+                });
+
                 mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have signed in"}});
 
             })
@@ -123,12 +131,6 @@ export class SignupForm extends React.Component{
             });
  
             this.setState({isLoading:false});
-            
-          //  let newMessage = {type:"success", text:"You signed up succesfully. Welcome"};
-
-        //    this.props.addMessage(newMessage); 
-             
-         //   this.context.router.history.push('/');
  
             }
     }
@@ -190,18 +192,6 @@ const mapStateToProps = (state) =>{
     }
 }
 
-// const mapDispatchToProps = (dispatch) =>{
-//     return{ 
-//         addMessage: (text) =>{
-//             dispatch(addMessageDispatcher(text));
-//         },
-   
-//         registerUser: (userData) =>{
-//             dispatch(registerUserDispatcher(userData))
-//         }
-//     }
-// }
-
 export default connect(mapStateToProps, {register})(SignupForm);
 
 SignupForm.contextTypes = {
@@ -210,6 +200,5 @@ SignupForm.contextTypes = {
 
 SignupForm.propTypes = {
     register: PropTypes.func.isRequired
- //   addMessage: PropTypes.func.isRequired 
 }
 

@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { login } from "./../../actions/LoginActions";
 import mystore from "./../../store";
+import jwtDecode from "jwt-decode";
 
 export class LoginForm extends React.Component{
     constructor(props){
@@ -29,8 +30,14 @@ onSubmit(e){
     
     this.props.login(loginData)
     .then(response => { 
-        console.log("the jwt token received is: " + response.data.jwt);
+        let token = response.data.jwt;
+        console.log("the jwt token received is: " + token);
+        localStorage.setItem("jwtToken", token);
+        console.log("decoded jwt: " + JSON.stringify(jwtDecode(token)));
+
           mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have logged in"}});
+
+        this.context.router.history.push("/");
 
     }
     )

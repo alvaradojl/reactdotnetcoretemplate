@@ -1,9 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { login } from "./../../actions/LoginActions";
+import { login, setCurrentUser } from "./../../actions/AuthActions";
 import mystore from "./../../store";
 import jwtDecode from "jwt-decode";
+import setAuthorizationToken from "./../../utils/setAuthorizationToken";
 
 export class LoginForm extends React.Component{
     constructor(props){
@@ -34,11 +35,13 @@ onSubmit(e){
         console.log("the jwt token received is: " + token);
         localStorage.setItem("jwtToken", token);
         console.log("decoded jwt: " + JSON.stringify(jwtDecode(token)));
-
-          mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have logged in"}});
-
-        this.context.router.history.push("/");
-
+       
+        mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have logged in"}});
+ 
+        mystore.dispatch(setCurrentUser(jwtDecode(token)));
+        setAuthorizationToken(token);
+       // this.context.router.history.push("/"); 
+ 
     }
     )
     .catch(result=>{ 
@@ -83,11 +86,19 @@ const {errors, identifier, password, isLoading} = this.state;
 }
 
 LoginForm.propTypes = {
-    login: PropTypes.func.isRequired
+    login: PropTypes.func.isRequired,
+    setCurrentUser: PropTypes.func.isRequired
 }
 
 LoginForm.contextTypes = {
     router : PropTypes.object.isRequired
 }
 
-export default connect(null, {login})(LoginForm);
+const mapStateToProps = (state) =>{
+    return {
+        messages:state.messages, 
+        auth:state.auth
+    }
+}
+
+export default connect(mapStateToProps, {login, setCurrentUser})(LoginForm);

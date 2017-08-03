@@ -10,8 +10,12 @@ import NoMatch from  "./../components/NoMatch";
 import FlashMessagesList from "./../components/Flash/FlashMessagesList";
 import { addMessageDispatcher, deleteMessageDispatcher } from "./../actions/MessagesActions";
 import LoginPage from "./../components/Login/LoginPage";
+import setAuthorizationToken from "./../utils/setAuthorizationToken";
+
 
 const newHistory = createBrowserHistory();
+
+setAuthorizationToken(localStorage.jwtToken);
  
 export class App extends React.Component {
   

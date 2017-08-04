@@ -8,6 +8,7 @@ using Backend.Web.Api.Models;
 using Backend.Web.Api.ViewModels;
 using System.Threading;
 using Backend.Web.Api.Dtos;
+using Backend.Web.Api.Data;
 
 namespace Backend.Web.Api.Controllers
 {

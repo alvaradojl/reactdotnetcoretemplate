@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Backend.Web.Api.Services;
 using Backend.Web.Api.Configuration;
+using Backend.Web.Api.Data; 
+using Backend.Web.Api.Filters;
 
 namespace Backend.Web.Api
 {
@@ -22,6 +24,7 @@ namespace Backend.Web.Api
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+            
         }
 
         public IConfigurationRoot Configuration { get; }
@@ -33,7 +36,9 @@ namespace Backend.Web.Api
             services.Configure<MySettings>(Configuration);
              
             services.AddSingleton<IUserRepository, UserRepository>();
+            services.AddSingleton<IEventRepository, EventRepository>();
             services.AddTransient<IPasswordService, PasswordService>();
+            services.AddSingleton<TokenFilter>();
 
             //Use this policy before MVC
             services.AddCors(options => {
@@ -57,7 +62,7 @@ namespace Backend.Web.Api
 
             //Use before MVC
             app.UseCors("CorsPolicy");
-
+             
             app.UseMvc();
         }
     }

@@ -24,27 +24,22 @@ export class App extends React.Component {
       
         return(  
             <div className="container">
-            <div className="row">
-                <div className="col-xs-10 col-xs-offset-1">
-                    <Header/>
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-xs-10 col-xs-offset-1">
-                    <FlashMessagesList messages={this.props.messages} deleteMessage={deleteMessageDispatcher} />
-                </div>
-            </div>
-            <div className="row">
-                <div className="col-xs-10 col-xs-offset-1">  
+                <Header/>
+                <FlashMessagesList messages={this.props.messages} deleteMessage={deleteMessageDispatcher} />
+                <div className="row marketing">
+
                     <Route exact path="/" component={Greetings}/>   
                     <Route exact path="/home" component={Greetings}/>
                     <Route exact path="/greetings" component={Greetings}/>
                     <Route exact path="/events" component={Authenticate(EventsPage)}/>
                     <Route exact path="/signup" component={SignupPage}/> 
                     <Route exact path="/login" component={LoginPage}/>
+                
                 </div>
+                <footer className="footer">
+                    <p>&copy; Jorge Alvarado 2017</p>
+                </footer>
             </div>
-        </div>
                
         );
     }

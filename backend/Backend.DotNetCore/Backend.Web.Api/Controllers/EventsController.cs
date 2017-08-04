@@ -63,7 +63,7 @@ namespace Backend.Web.Api.Controllers
                 }
                 catch
                 {
-                    return StatusCode(500, new { message = "error while attempting to add the user." });
+                    return StatusCode(500, new { message = "An error occurred while attempting to add the event." });
                 }
                 
             }

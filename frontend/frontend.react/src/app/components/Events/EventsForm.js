@@ -40,14 +40,14 @@ export class EventsForm extends React.Component{
                     this.context.router.history.push("/login");
                 }
                 else{
+                    this.setState({errors:{}, isLoading:false}); 
+                    mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to create an event."}});
                     console.log(JSON.stringify(result));
                 }
                
             }
         );
-
-    
-
+ 
     }
 
     

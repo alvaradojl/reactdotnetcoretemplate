@@ -119,16 +119,17 @@ export class SignupForm extends React.Component{
                 });
 
                 mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have signed in"}});
-
+                this.setState({isLoading:false});
             })
             .catch(result=>{ 
                 if(result.response){
-                    console.log("ended up in catch with error.response.data: " + JSON.stringify(result.response.data));
-                    this.setState({ isLoading:false });
+                    this.setState({ isLoading:false}); 
+                    mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to register."}});
+                    console.log(JSON.stringify(result));
                 }   
             });
  
-            this.setState({isLoading:false});
+        
  
             }
     }

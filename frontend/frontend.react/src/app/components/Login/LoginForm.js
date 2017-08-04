@@ -39,6 +39,7 @@ onSubmit(e){
         mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have logged in"}});
  
         mystore.dispatch(setCurrentUser(jwtDecode(token)));
+          this.setState({errors:{}, isLoading:false});
         setAuthorizationToken(token);
         this.context.router.history.push("/"); 
  
@@ -46,12 +47,13 @@ onSubmit(e){
     )
     .catch(result=>{ 
         if(result.response){
-            console.log("ended up in catch with error.response: " + JSON.stringify(result.response.data));
-            this.setState({ isLoading:false });
+            this.setState({ isLoading:false}); 
+            mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to log in."}});
+            console.log(JSON.stringify(result));
         }   
     });
 
-  this.setState({errors:{}, isLoading:false});
+
 
 }
 

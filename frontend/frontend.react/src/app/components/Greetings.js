@@ -4,7 +4,12 @@ export default class Greetings extends React.Component{
 
     render(){
         return(
-            <h1>Greetings from React</h1>
+            <div className="jumbotron">
+                <h1 className="display-3">Greetings</h1>
+                <p className="lead">Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, 
+                    tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
+                </p> 
+            </div>
         );
     }
 }

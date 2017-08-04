@@ -55,6 +55,7 @@ var config = {
         ]
     }, 
     plugins:[ 
+            new webpack.ProvidePlugin({}),
             extractPlugin,
             new HtmlWebpackPlugin({
                 template:'src/index.html'

@@ -17,32 +17,38 @@ export class Header extends React.Component{
         const { isAuthenticated } = this.props.auth;
 
         const userLinks = (
-            <ul className="nav navbar-nav navbar-right">
-                <li><NavLink className="navbar-brand" activeStyle={{fontWeight: 'bold', color: 'red'}}  to="/events" exact>Events</NavLink> </li>
-                <li><a className="navbar-brand" onClick={this.logout.bind(this)}  href="/logout">Log out</a></li> 
+           <ul className="nav nav-pills float-right">
+                <li className="nav-item"><NavLink className="nav-link" activeStyle={{fontWeight: 'bold', color: 'yellow'}}  to="/events" exact>Events</NavLink> </li>
+                <li className="nav-item"><a className="nav-link" onClick={this.logout.bind(this)}  href="/logout">Log out</a></li> 
             
             </ul>
         );
 
         const guestLinks = (
-            <ul className="nav navbar-nav navbar-right">
-                    <li><NavLink activeStyle={{fontWeight: 'bold', color: 'red'}}  to="/signup">Sign Up</NavLink></li>
-                    <li><NavLink activeStyle={{fontWeight: 'bold', color: 'red'}}  to="/login">Login</NavLink></li>
+            <ul className="nav nav-pills float-right">
+                   <li className="nav-item"><NavLink className="nav-link" activeStyle={{fontWeight: 'bold', color: 'yellow'}}  to="/signup">Sign Up</NavLink></li>
+                   <li className="nav-item"><NavLink className="nav-link" activeStyle={{fontWeight: 'bold', color: 'yellow'}}  to="/login">Login</NavLink></li>
             </ul>
         );
 
         return(
-            <nav className="navbar navbar-default">
-                <div className="container-fluid">
-                    <div className="navbar-header"> 
-                      <NavLink className="navbar-brand" activeStyle={{fontWeight: 'bold', color: 'red'}}  to="/" exact>Home</NavLink>  
-                        <NavLink className="navbar-brand" activeStyle={{fontWeight: 'bold', color: 'red'}}  to="/greetings" exact>Greetings</NavLink> 
-                  </div>
-                    <div className="collapse navbar-collapse">
-                       { isAuthenticated ? userLinks : guestLinks }
-                    </div>
+            <div className="row">
+                <div className="header col-md-6">
+                    <nav>
+                        <ul className="nav nav-pills">
+                            <li className="nav-item"><NavLink className="nav-link" activeStyle={{fontWeight: 'bold', color: 'yellow'}}  to="/" exact>Home</NavLink></li>
+                            <li className="nav-item"><NavLink className="nav-link" activeStyle={{fontWeight: 'bold', color: 'yellow'}}  to="/greetings" exact>Greetings</NavLink></li>
+                        
+                        </ul> 
+                    </nav>
                 </div>
-            </nav>
+                <div className="header col-md-6">
+                    <nav>
+                     { isAuthenticated ? userLinks : guestLinks }
+                    </nav>
+                </div>
+                <h3 className="text-muted">React App</h3>
+            </div>
         );
     }
 }

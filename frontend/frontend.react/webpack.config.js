@@ -30,7 +30,7 @@ var config = {
                 })
             },
             {
-                test:/\.(jpg|png)$/,
+                test: /\.jpe?g$|\.ico$|\.gif$|\.png$|\.svg$/,
                 use:[{
                     loader:'file-loader',
                     options:{
@@ -58,7 +58,8 @@ var config = {
             new webpack.ProvidePlugin({}),
             extractPlugin,
             new HtmlWebpackPlugin({
-                template:'src/index.html'
+                template:'src/index.html',
+                favicon: 'src/app/images/favicon.ico'
             }),
             new CleanWebpackPlugin(['dist'])
     ]

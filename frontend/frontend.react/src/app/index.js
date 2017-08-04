@@ -9,7 +9,7 @@ import setAuthorizationToken from "./utils/setAuthorizationToken";
 import {setCurrentUser} from "./actions/AuthActions";
 import jwtDecode from "jwt-decode"; 
 import "./styles/main.scss";
-
+import "./images/favicon.ico";
 const newHistory = createBrowserHistory();
 
 

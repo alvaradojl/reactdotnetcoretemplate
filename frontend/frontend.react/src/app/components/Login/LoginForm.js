@@ -40,7 +40,7 @@ onSubmit(e){
  
         mystore.dispatch(setCurrentUser(jwtDecode(token)));
         setAuthorizationToken(token);
-       // this.context.router.history.push("/"); 
+        this.context.router.history.push("/"); 
  
     }
     )

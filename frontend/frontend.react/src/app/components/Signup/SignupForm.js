@@ -2,13 +2,11 @@ import React from "react";
 import timezones from "./../../data/timezones";
 import map from "lodash/map";
 import PropTypes from "prop-types";
-import classnames from "classnames";
-import isNullOrWhitespace from "./../../Utilities";
+import classnames from "classnames"; 
 import isEmpty from "lodash/isEmpty";
 import Validator from "validator"; 
 import mystore from "./../../store.js";
-import {connect}  from "react-redux"; 
-//import {addMessageDispatcher } from "./../../actions/MessagesActions";
+import {connect}  from "react-redux";  
 import {register}  from "./../../actions/RegisterActions";
 
 export class SignupForm extends React.Component{

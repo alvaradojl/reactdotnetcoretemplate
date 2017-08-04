@@ -1,6 +1,15 @@
 import axios from "axios";
 import setAuthorizationToken from "./../utils/setAuthorizationToken";
 import jwtDecode from "jwt-decode";
+import mystore from "./../store";
+
+export function logout(){
+    return dispatch =>{
+        localStorage.removeItem("jwtToken");
+        setAuthorizationToken(false);
+        mystore.dispatch(setCurrentUser({}));
+    }
+}
 
 export function setCurrentUser(user){
     return {

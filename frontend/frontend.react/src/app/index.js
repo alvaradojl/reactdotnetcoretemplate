@@ -7,7 +7,8 @@ import { Provider } from "react-redux";
 import mystore from "./store";
 import setAuthorizationToken from "./utils/setAuthorizationToken";
 import {setCurrentUser} from "./actions/AuthActions";
-import jwtDecode from "jwt-decode";
+import jwtDecode from "jwt-decode"; 
+import "./styles/main.scss";
 
 const newHistory = createBrowserHistory();
 

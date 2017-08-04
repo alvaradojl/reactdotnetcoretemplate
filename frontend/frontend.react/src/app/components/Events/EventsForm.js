@@ -2,8 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { addEvent } from "./../../actions/EventsActions";
-import mystore from "./../../store";
-import NProgress from "NProgress";
+import mystore from "./../../store"; 
 
 export class EventsForm extends React.Component{
       constructor(props){

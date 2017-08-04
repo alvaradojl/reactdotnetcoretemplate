@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build",
-    "build": "webpack -d && xcopy \"src/index.html\" \"dist\" /F /Y && webpack-dev-server --content-base src/ --inline --watch --history-api-fallback",
-    "build:prod": "webpack -p && xcopy \"src/index.html\" \"dist\" /F /Y"
+    "build": "webpack -d && webpack-dev-server --content-base src/ --inline --watch --history-api-fallback",
+    "build:prod": "webpack -p"
   },
   "author": "",
   "license": "ISC",
@@ -16,10 +16,10 @@
     "classnames": "^2.2.5",
     "history": "^4.6.3",
     "jwt-decode": "^2.2.0",
-    "lodash": "^4.17.4", 
+    "lodash": "^4.17.4",
     "prop-types": "^15.5.10",
     "react": "^15.6.1",
-    "react-dom": "^15.6.1", 
+    "react-dom": "^15.6.1",
     "react-redux": "^5.0.5",
     "react-router": "^4.1.2",
     "react-router-dom": "^4.1.2",
@@ -38,6 +38,15 @@
     "babel-preset-stage-2": "^6.24.1",
     "redux-devtools": "^3.4.0",
     "webpack": "^3.3.0",
-    "webpack-dev-server": "^2.6.1"
+    "webpack-dev-server": "^2.6.1",
+    "clean-webpack-plugin": "^0.1.16",
+    "css-loader": "^0.28.4",
+    "extract-text-webpack-plugin": "^3.0.0",
+    "file-loader": "^0.11.2",
+    "html-loader": "^0.4.5",
+    "html-webpack-plugin": "^2.29.0",
+    "node-sass": "^4.5.3",
+    "sass-loader": "^6.0.6",
+    "style-loader": "^0.18.2"
   }
 }

@@ -9,7 +9,9 @@ import Typography from 'material-ui/Typography';
 import Grid from 'material-ui/Grid';
 import TextField from 'material-ui/TextField';
 import { withStyles, createStyleSheet } from 'material-ui/styles';
-import Button from 'material-ui/Button'; 
+import Button from 'material-ui/Button';  
+import isEmpty from "lodash/isEmpty";
+import Validator from "validator"; 
 
 const styleSheet = createStyleSheet(theme => ({
   container: {
@@ -21,7 +23,6 @@ const styleSheet = createStyleSheet(theme => ({
     marginRight: theme.spacing.unit
   } 
 }));
-
 
 export class LoginForm extends React.Component{
     constructor(props){
@@ -37,44 +38,76 @@ export class LoginForm extends React.Component{
         this.onChange = this.onChange.bind(this);
     }
 
+    
+    validateInput(data){
+        let errors = {};
+
+        if(Validator.isEmpty(data.identifier)){
+            errors.identifier="identifier is required.";
+        }
+ 
+        if(Validator.isEmpty(data.password)){
+            errors.password="password is required.";
+        }
+ 
+        return { errors, 
+            isValid: isEmpty(errors) 
+        }
+    }
+
+    isValid(){
+        const { errors, isValid } = this.validateInput(this.state);
+
+        if(!isValid){
+            this.setState({errors});
+        }
+
+        return isValid;
+      //  return true;
+    }
+
 onSubmit(e){
     e.preventDefault();
-    this.setState({errors:{}, isLoading:true});
-    
-    let loginData = {
-        identifier : this.state.identifier,
-        password : this.state.password
-    }
 
-     mystore.dispatch({type:"TOGGLE_LOADING", status: true});
+    if(this.isValid()){
+
+
+        this.setState({errors:{}, isLoading:true});
+        
+        let loginData = {
+            identifier : this.state.identifier,
+            password : this.state.password
+        }
+
+        mystore.dispatch({type:"TOGGLE_LOADING", status: true});
+        
+        this.props.login(loginData)
+        .then(response => { 
+            let token = response.data.jwt;
+            console.log("the jwt token received is: " + token);
+            localStorage.setItem("jwtToken", token);
+            console.log("decoded jwt: " + JSON.stringify(jwtDecode(token)));
+        
+            mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have logged in"}});
+            mystore.dispatch({type:"TOGGLE_LOADING", status: false});
+            mystore.dispatch(setCurrentUser(jwtDecode(token)));
+            this.setState({errors:{}, isLoading:false});
+            setAuthorizationToken(token);
+            this.context.router.history.push("/events"); 
     
-    this.props.login(loginData)
-    .then(response => { 
-        let token = response.data.jwt;
-        console.log("the jwt token received is: " + token);
-        localStorage.setItem("jwtToken", token);
-        console.log("decoded jwt: " + JSON.stringify(jwtDecode(token)));
-       
-        mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have logged in"}});
-  mystore.dispatch({type:"TOGGLE_LOADING", status: false});
-        mystore.dispatch(setCurrentUser(jwtDecode(token)));
-          this.setState({errors:{}, isLoading:false});
-        setAuthorizationToken(token);
-        this.context.router.history.push("/events"); 
+        }
+        )
+        .catch(result=>{ 
+            if(result.response){
+                this.setState({ isLoading:false}); 
+                mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to log in."}});
+                console.log(JSON.stringify(result));
+                mystore.dispatch({type:"TOGGLE_LOADING", status: false});
+            }   
+        });
+
+    }
  
-    }
-    )
-    .catch(result=>{ 
-        if(result.response){
-            this.setState({ isLoading:false}); 
-            mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to log in."}});
-            console.log(JSON.stringify(result));
-              mystore.dispatch({type:"TOGGLE_LOADING", status: false});
-        }   
-    });
-
-
-
 }
 
 onChange(e){
@@ -108,30 +141,59 @@ const {errors, identifier, password, isLoading} = this.state;
                             className={classes.textField}
                             value={this.state.identifier} 
                             onChange={this.onChange} 
-                            margin="normal"
-                            helperText="username or email to login"
+                            margin="normal" 
                             InputProps={{ placeholder: 'email@email.com' }}
                             fullWidth
+                            helperText={this.state.errors.identifier}
+                            error={!isEmpty(this.state.errors.identifier)}
                         />
                         <br/>
                     
                         <TextField
-                        id="password"
-                        name="password"
-                        label="Password"
-                        className={classes.textField}
-                         value={this.state.password} 
+                            id="password"
+                            name="password"
+                            label="Password"
+                            className={classes.textField}
+                            value={this.state.password} 
                             onChange={this.onChange} 
-                        type="password" 
-                        margin="normal"
-                        helperText="password for login"
-                        fullWidth
-                        />
+                            type="password" 
+                            margin="normal" 
+                            fullWidth
+                            helperText={this.state.errors.password}
+                            error={!isEmpty(this.state.errors.password)}
+                            />
                         <br/>
 
                         <br/>
-                        <Button type="submit" disabled={this.state.isLoading}  color="accent" className={classes.button}>Login</Button>
+ 
+                        <Grid container className={classes.root}>
+                            <Grid item md={12}>
+                                <Grid
+                                    container
+                                    className={classes.demo}
+                                    align="center"
+                                    direction="row"
+                                    justify="center"
+                                    >
+
+
+                                  <Button 
+                                    type="submit" 
+                                    disabled={this.state.isLoading}  
+                                    color="accent" 
+                                    className={classes.button}
+                                     style = {{  
+                                            width:'100px'    
+                                        }}>
+                                  Login
+                                  </Button>
                     
+
+                                </Grid>
+                            </Grid>
+                        </Grid>
+
+                        
                     </form>
                 </Grid>
                 <Grid item md={3}>

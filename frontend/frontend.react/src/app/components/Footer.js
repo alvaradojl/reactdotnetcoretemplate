@@ -37,13 +37,13 @@ export class Footer extends React.Component{
 
     return (
       <div className={classes.root}>
-        <BottomNavigation value={value} onChange={this.handleChange} showLabels  >
+        {/* <BottomNavigation value={value} onChange={this.handleChange} showLabels  >
             <BottomNavigationButton label="Home" icon={<HomeIcon />} />
             <BottomNavigationButton label="Explore" icon={<ExploreIcon />} />
             <BottomNavigationButton label="Favorites" icon={<FavoriteIcon />} />
             <BottomNavigationButton label="Nearby" icon={<LocationOnIcon />} />
             <BottomNavigationButton label="Settings" icon={<SettingsIcon />} />          
-        </BottomNavigation>
+        </BottomNavigation> */}
         <br/>
         <Typography  type="caption" gutterBottom align="center">
           &copy;2017 Jorge Alvarado

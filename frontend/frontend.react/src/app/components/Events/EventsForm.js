@@ -90,7 +90,7 @@ export class EventsForm extends React.Component{
                 </Grid>
                 <Grid item md={6}> 
                      <Typography type="display2" gutterBottom>
-                        Login
+                        Create an event
                     </Typography>
                      <form onSubmit={this.onSubmit}>
              

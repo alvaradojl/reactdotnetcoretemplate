@@ -11,6 +11,7 @@ using Backend.Web.Api.Configuration;
 using Backend.Web.Api.Data;
 using Backend.Web.Api.Dtos;
 using Jose;
+using System.Threading;
 
 namespace Backend.Web.Api.Controllers
 {
@@ -37,6 +38,8 @@ namespace Backend.Web.Api.Controllers
         [HttpPost]
         public ActionResult Post([FromBody]LoginVM model)
         {
+            Thread.Sleep(4000);
+
             if (ModelState.IsValid)
             { 
              
@@ -77,10 +80,23 @@ namespace Backend.Web.Api.Controllers
                     }
                 }
 
+            } 
+            else
+            {
+
+
+                var listErrors = ModelState.ToDictionary(
+                  m => m.Key,
+                  m => m.Value.Errors
+                    .Select(s => s.ErrorMessage)
+                    .FirstOrDefault(s => s != null)
+                );
+
+
+
+                return BadRequest(new OperationResponse() { IsValid = false, Errors = listErrors });
             }
 
-            return BadRequest();
-            
         }
         
       

@@ -11,6 +11,7 @@ using Backend.Web.Api.Services;
 using Backend.Web.Api.Configuration;
 using Backend.Web.Api.Data; 
 using Backend.Web.Api.Filters;
+using Newtonsoft.Json.Serialization;
 
 namespace Backend.Web.Api
 {
@@ -50,7 +51,10 @@ namespace Backend.Web.Api
                     );
             });
 
-            services.AddMvc();
+            services.AddMvc()
+                .AddJsonOptions(opts => {
+                        opts.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                }); ;
 
         }
 

@@ -16,8 +16,7 @@ import createPalette from 'material-ui/styles/palette';
 import purple from 'material-ui/colors/purple';
 import green from 'material-ui/colors/green';
 import red from 'material-ui/colors/red';
-import blue from 'material-ui/colors/blue';
-import lightblue from 'material-ui/colors/lightblue';
+import blue from 'material-ui/colors/blue'; 
 import pink from 'material-ui/colors/pink';
 const newHistory = createBrowserHistory();
 

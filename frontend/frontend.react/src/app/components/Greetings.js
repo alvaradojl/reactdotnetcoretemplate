@@ -14,6 +14,7 @@ import List, {
 import Switch from 'material-ui/Switch';
 import WifiIcon from 'material-ui-icons/Wifi';
 import BluetoothIcon from 'material-ui-icons/Bluetooth';
+import Grid from 'material-ui/Grid';
 
 
 const styleSheet = createStyleSheet(theme => ({
@@ -49,31 +50,17 @@ export class Greetings extends React.Component{
         const classes = this.props.classes;
 
         return(
-            <div className="jumbotron">
-                <h1 className="display-3">Greetings</h1>
-                <p className="lead">Cras justo odio, dapibus ac facilisis in, egestas eget quam. Fusce dapibus, 
-                    tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.
-                </p> 
-                <Button color="primary">
-                {'Primary'}
-                </Button>
-                <Button color="accent">
-                {'Accent'}
-                </Button>
+             
+  
+    <div className={classes.container}>
 
-                <div>
-      <CircularProgress className={classes.progress} />
-      <CircularProgress className={classes.progress} size={50} />
-      <CircularProgress color="accent" className={classes.progress} />
-      <CircularProgress color="accent" className={classes.progress} size={50} />
-    </div>
-     <div className={classes.root}>
-      <LinearProgress />
-      <br />
-      <LinearProgress color="accent" />
-    </div>
-     <div className={classes.root}>
-        <List subheader={<ListSubheader>Settings</ListSubheader>}>
+                <Grid container gutter={24}>
+                    <Grid item md={3}>
+                    
+                    </Grid>
+                    <Grid item md={6}>
+                        
+                        <List subheader={<ListSubheader>Settings</ListSubheader>}>
           <ListItem>
             <ListItemIcon>
               <WifiIcon />
@@ -99,8 +86,14 @@ export class Greetings extends React.Component{
             </ListItemSecondaryAction>
           </ListItem>
         </List>
-      </div>
+
+                    </Grid> 
+                    <Grid item md={3}>
+                        
+                    </Grid> 
+                </Grid> 
             </div>
+        
            
         );
     }

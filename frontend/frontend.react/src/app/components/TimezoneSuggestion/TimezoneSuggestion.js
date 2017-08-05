@@ -126,13 +126,13 @@ const styleSheet = createStyleSheet(theme => ({
     flexGrow: 1,
     position: 'relative',
     height: 100,
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit
   },
   suggestionsContainerOpen: {
     position: 'absolute',
     marginTop: theme.spacing.unit,
-    marginBottom: theme.spacing.unit * 3,
-    left: 0,
-    right: 0
+    marginBottom: theme.spacing.unit * 4
   },
   suggestion: {
     display: 'block',

@@ -1,8 +1,7 @@
 import React from "react";
 //import timezones from "./../../data/timezones";
 import map from "lodash/map";
-import PropTypes from "prop-types";
-import classnames from "classnames"; 
+import PropTypes from "prop-types"; 
 import isEmpty from "lodash/isEmpty";
 import Validator from "validator"; 
 import mystore from "./../../store.js";
@@ -15,17 +14,28 @@ import Paper from 'material-ui/Paper';
 import { MenuItem } from 'material-ui/Menu';
 import IntegrationAutosuggest from "./../TimezoneSuggestion/TimezoneSuggestion";
 import Typography from 'material-ui/Typography';
-import Grid from 'material-ui/Grid';
+import Grid from 'material-ui/Grid'; 
+import List, {
+  ListItem,
+  ListItemAvatar,
+  ListItemIcon,
+  ListItemSecondaryAction,
+  ListItemText,
+} from 'material-ui/List';
+import { red, purple } from 'material-ui/colors';
 
 const styleSheet = createStyleSheet(theme => ({
   container: {
      flexGrow: 1,
       marginTop: 30,
   },
+    root: {
+    flexGrow: 1,
+  },
   textField: {
     marginLeft: theme.spacing.unit,
     marginRight: theme.spacing.unit
-  } 
+  }
 }));
 
 
@@ -60,36 +70,36 @@ export class SignupForm extends React.Component{
     }
 
     validateInput(data){
-        let errors = [];
+        let errors = {};
 
         if(Validator.isEmpty(data.username)){
-            errors.push("username is required.");
+            errors.username="username is required.";
         }
 
         if(Validator.isEmpty(data.email)){
-            errors.push("email is required.");
+            errors.email="email is required.";
         }
         else{ 
             if(!Validator.isEmail(data.email)){
-                errors.push("not a valid email.");
+                errors.email = "not a valid email.";
             }
         }
 
         if(Validator.isEmpty(data.password)){
-            errors.push("password is required.");
+            errors.password="password is required.";
         }
 
         if(Validator.isEmpty(data.passwordConfirmation)){
-            errors.push("passwordConfirmation is required.");
+            errors.passwordConfirmation="passwordConfirmation is required.";
         }
         else{
             if(!Validator.equals(data.password, data.passwordConfirmation)){
-                errors.push("Passwords must match.");
+                errors.password="Passwords must match.";
             }
         }
 
         if(Validator.isEmpty(data.timezone)){
-            errors.push("timezone is required.");
+            errors.timezone="timezone is required.";
         }
  
      
@@ -102,14 +112,14 @@ export class SignupForm extends React.Component{
     }
 
     isValid(){
-        // const { errors, isValid } = this.validateInput(this.state);
+        const { errors, isValid } = this.validateInput(this.state);
 
-        // if(!isValid){
-        //     this.setState({errors});
-        // }
+        if(!isValid){
+            this.setState({errors});
+        }
 
-        // return isValid;
-        return true;
+        return isValid;
+      //  return true;
     }
 
     onSubmit(e){
@@ -156,96 +166,132 @@ export class SignupForm extends React.Component{
 
     render(){
 
-        const errorsRetrieved = map(this.state.errors, (item, index)=> <li key={index}>{item}</li>);
-
+         
         const { classes } = this.props;
 
         return(
 
             <div className={classes.container}>
 
-            <Grid container gutter={24}>
-                <Grid item md={3}>
-                  
-                </Grid>
-                <Grid item md={6}>
-                   
-                     <Typography type="display2" gutterBottom>
-                        Join our community
-                    </Typography>
-
-                    <form onSubmit={this.onSubmit}  >
-
- 
-                        <TextField
-                            required
-                            id="username"
-                            name="username"
-                            label="Username"
-                            className={classes.textField}
-                            value={this.state.username} 
-                            onChange={this.onChange} 
-                            margin="normal"
-                            helperText="username for login"
-                            fullWidth
-                        />
-                        <br/>
-                        <TextField
-                            required
-                            id="email"
-                            name="email"
-                            label="Email"
-                            className={classes.textField}
-                            value={this.state.email} 
-                            onChange={this.onChange} 
-                            margin="normal"
-                            helperText="email to confirm"
-                            InputProps={{ placeholder: 'email@email.com' }}
-                            fullWidth
-                        />
-                        <br/>
+                <Grid container gutter={24}>
+                    <Grid item md={3}>
                     
-                        <TextField
-                        id="password"
-                        name="password"
-                        label="Password"
-                        className={classes.textField}
-                            onChange={this.onChange} 
-                        type="password"
-                        autoComplete="current-password"
-                        margin="normal"
-                        helperText="password for login"
-                        fullWidth
-                        />
-                        <br/>
-                        <TextField
-                        id="passwordConfirmation"
-                        name="passwordConfirmation"
-                        label="PasswordConfirmation"
-                            onChange={this.onChange} 
-                        className={classes.textField}
-                        type="password"
-                        autoComplete="current-password"
-                        margin="normal"
-                        helperText="password for double checking"
-                        fullWidth={true}
-                        />
-                        <br/>
-                        <br/>
-                        <IntegrationAutosuggest id="timezone" name="timezone"     onChange={this.onChange} />
-                        <br/>
-                        <Button disabled={this.state.isLoading}  color="accent" className={classes.button}>Sign up</Button>
+                    </Grid>
+                    <Grid item md={6}>
+                        
                     
-                
-                    </form>
+                        <Typography type="display2" gutterBottom>
+                            Sign up
+                        </Typography>
 
+                        <form onSubmit={this.onSubmit}  >
+    
+                            <TextField
+                                required
+                                id="username"
+                                name="username"
+                                label="Username"
+                                className={classes.textField}
+                                value={this.state.username} 
+                                onChange={this.onChange} 
+                                margin="normal"
+                                fullWidth
+                                helperText={this.state.errors.username} 
+                                error={!isEmpty(this.state.errors.username)}
+                            />
+    
+                            <br/>
+                            <TextField
+                                required
+                                id="email"
+                                name="email"
+                                label="Email"
+                                className={classes.textField}
+                                value={this.state.email} 
+                                onChange={this.onChange} 
+                                margin="normal" 
+                                InputProps={{ placeholder: 'email@email.com' }}
+                                fullWidth
+                                helperText={this.state.errors.email} 
+                                error={!isEmpty(this.state.errors.email)}
+                            />
+                            <br/>
+                        
+                            <TextField
+                            id="password"
+                            name="password"
+                            label="Password"
+                            className={classes.textField}
+                            onChange={this.onChange} 
+                            type="password"
+                            autoComplete="current-password"
+                            margin="normal" 
+                            fullWidth
+                            helperText={this.state.errors.password} 
+                            error={!isEmpty(this.state.errors.password)}
+                            />
+                            <br/>
+
+                            <TextField
+                            id="passwordConfirmation"
+                            name="passwordConfirmation"
+                            label="PasswordConfirmation"
+                            onChange={this.onChange} 
+                            className={classes.textField}
+                            type="password"
+                            autoComplete="current-password"
+                            margin="normal" 
+                            fullWidth
+                            helperText={this.state.errors.passwordConfirmation} 
+                            error={!isEmpty(this.state.errors.passwordConfirmation)}
+                            />
+                            <br/>
+                            <br/>
+                            <IntegrationAutosuggest 
+                            id="timezone" 
+                            name="timezone"     
+                            onChange={this.onChange}
+                            helperText={this.state.errors.timezone} 
+                            error={!isEmpty(this.state.errors.timezone)}
+                            />
+                            <br/>
+
+                            <Grid container className={classes.root}>
+                                <Grid item md={12}>
+                                    <Grid
+                                        container
+                                        className={classes.demo}
+                                        align="center"
+                                        direction="row"
+                                        justify="center"
+                                        >
+
+
+                                        <Button 
+                                            type="submit" 
+                                            disabled={this.state.isLoading}  
+                                            raised 
+                                            color="accent"  
+                                            className={classes.button}
+                                            style = {{  
+                                                width:'100px'    
+                                            }}>
+                                            Sign up
+                                        </Button>
+
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+
+                        
+                        </form>
+
+                    </Grid> 
+                    <Grid item md={3}>
+                        
+                    </Grid> 
                 </Grid> 
-                <Grid item xs={3}>
-                     
-                </Grid>
-                
-            </Grid> 
-      </div>
+            </div>
  
         );
     }

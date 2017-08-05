@@ -12,7 +12,8 @@ import LoginPage from "./../components/Login/LoginPage";
 import setAuthorizationToken from "./../utils/setAuthorizationToken";
 import EventsPage from "./../components/Events/EventsPage";
 import Authenticate from "./../utils/Authenticate";
-
+import Footer from "./../components/Footer";
+import TopProgress from "./../components/TopProgress";
 
 const newHistory = createBrowserHistory();
 
@@ -23,22 +24,19 @@ export class App extends React.Component {
     render(){
       
         return(  
-            <div className="container">
+            <div>
+                <TopProgress/>
                 <Header/>
                 <FlashMessagesList messages={this.props.messages} deleteMessage={deleteMessageDispatcher} />
-                <div className="row marketing">
-
+                <div> 
                     <Route exact path="/" component={Greetings}/>   
                     <Route exact path="/home" component={Greetings}/>
                     <Route exact path="/greetings" component={Greetings}/>
                     <Route exact path="/events" component={Authenticate(EventsPage)}/>
                     <Route exact path="/signup" component={SignupPage}/> 
-                    <Route exact path="/login" component={LoginPage}/>
-                
+                    <Route exact path="/login" component={LoginPage}/> 
                 </div>
-                <footer className="footer">
-                    <p>&copy; Jorge Alvarado 2017</p>
-                </footer>
+                 <Footer/>
             </div>
                
         );

@@ -1,5 +1,6 @@
 import React from "react";
 import LoginForm from "./LoginForm";
+import { connect } from "react-redux";
 
 export class LoginPage extends React.Component{
     render(){
@@ -10,5 +11,11 @@ export class LoginPage extends React.Component{
         );
     }
 }
+const mapStateToProps = (state) =>{
+    return {
+        messages:state.messages, 
+        auth:state.auth
+    }
+}
 
-export default LoginPage;
+export default connect(mapStateToProps)(LoginPage);

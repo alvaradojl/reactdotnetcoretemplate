@@ -1,5 +1,5 @@
 import React from "react";
-import timezones from "./../../data/timezones";
+//import timezones from "./../../data/timezones";
 import map from "lodash/map";
 import PropTypes from "prop-types";
 import classnames from "classnames"; 
@@ -8,8 +8,30 @@ import Validator from "validator";
 import mystore from "./../../store.js";
 import {connect}  from "react-redux";  
 import {register}  from "./../../actions/RegisterActions";
+import TextField from 'material-ui/TextField';
+import { withStyles, createStyleSheet } from 'material-ui/styles';
+import Button from 'material-ui/Button'; 
+import Paper from 'material-ui/Paper';
+import { MenuItem } from 'material-ui/Menu';
+import IntegrationAutosuggest from "./../TimezoneSuggestion/TimezoneSuggestion";
+import Typography from 'material-ui/Typography';
+import Grid from 'material-ui/Grid';
+
+const styleSheet = createStyleSheet(theme => ({
+  container: {
+     flexGrow: 1,
+      marginTop: 30,
+  },
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit
+  } 
+}));
+
 
 export class SignupForm extends React.Component{
+
+ 
 
     constructor(props){
         super(props);
@@ -128,58 +150,103 @@ export class SignupForm extends React.Component{
                     console.log(JSON.stringify(result));
                 }   
             });
- 
-        
- 
-            }
+  
+        }
     }
 
     render(){
 
-    const options = map(timezones, (val,key)=> <option key={val} value={val}>{key}</option>);
+        const errorsRetrieved = map(this.state.errors, (item, index)=> <li key={index}>{item}</li>);
 
-    const errorsRetrieved = map(this.state.errors, (item, index)=> <li key={index}>{item}</li>);
- 
+        const { classes } = this.props;
+
         return(
-            <form onSubmit={this.onSubmit}>
-                <h1>Join our community</h1> 
-                <div className="form-group">
-                    <label className="control-label">Username</label>
-                    <input type="text" name="username" className="form-control" value={this.state.username} onChange={this.onChange}/>
 
-                </div>
+            <div className={classes.container}>
 
-                 <div className="form-group">
-                    <label className="control-label">Email</label>
-                    <input type="text" name="email" className="form-control" value={this.state.email} onChange={this.onChange}/>
+            <Grid container gutter={24}>
+                <Grid item md={3}>
+                  
+                </Grid>
+                <Grid item md={6}>
+                   
+                     <Typography type="display2" gutterBottom>
+                        Join our community
+                    </Typography>
 
-                </div>
+                    <form onSubmit={this.onSubmit}  >
 
-                <div className="form-group">
-                    <label className="control-label">Password</label>
-                    <input type="password" name="password" className="form-control" value={this.state.password} onChange={this.onChange}/>
+ 
+                        <TextField
+                            required
+                            id="username"
+                            name="username"
+                            label="Username"
+                            className={classes.textField}
+                            value={this.state.username} 
+                            onChange={this.onChange} 
+                            margin="normal"
+                            helperText="username for login"
+                            fullWidth
+                        />
+                        <br/>
+                        <TextField
+                            required
+                            id="email"
+                            name="email"
+                            label="Email"
+                            className={classes.textField}
+                            value={this.state.email} 
+                            onChange={this.onChange} 
+                            margin="normal"
+                            helperText="email to confirm"
+                            InputProps={{ placeholder: 'email@email.com' }}
+                            fullWidth
+                        />
+                        <br/>
+                    
+                        <TextField
+                        id="password"
+                        name="password"
+                        label="Password"
+                        className={classes.textField}
+                            onChange={this.onChange} 
+                        type="password"
+                        autoComplete="current-password"
+                        margin="normal"
+                        helperText="password for login"
+                        fullWidth
+                        />
+                        <br/>
+                        <TextField
+                        id="passwordConfirmation"
+                        name="passwordConfirmation"
+                        label="PasswordConfirmation"
+                            onChange={this.onChange} 
+                        className={classes.textField}
+                        type="password"
+                        autoComplete="current-password"
+                        margin="normal"
+                        helperText="password for double checking"
+                        fullWidth={true}
+                        />
+                        <br/>
+                        <br/>
+                        <IntegrationAutosuggest id="timezone" name="timezone"     onChange={this.onChange} />
+                        <br/>
+                        <Button disabled={this.state.isLoading}  color="accent" className={classes.button}>Sign up</Button>
+                    
+                
+                    </form>
 
-                </div>
-
-                <div className="form-group">
-                    <label className="control-label">Password Confirmation</label>
-                    <input type="password" name="passwordConfirmation" className="form-control" value={this.state.passwordConfirmation} onChange={this.onChange}/>
-
-                </div>
-
-               <div className="form-group">
-                    <label className="control-label">Timezone</label>
-                    <select  name="timezone" className="form-control" value={this.state.timezone} onChange={this.onChange}>
-                        <option value="" disabled>Choose your timezone</option>
-                        {options}
-                    </select>
-
-                </div>
-
-                <div className="form-group">
-                    <button disabled={this.state.isLoading} className="btn btn-primary btn-lg">Sign up</button>
-                </div>
-            </form>
+                </Grid> 
+                <Grid item xs={3}>
+                     
+                </Grid>
+                
+            </Grid> 
+      </div>
+ 
         );
     }
 }
@@ -191,13 +258,16 @@ const mapStateToProps = (state) =>{
     }
 }
 
-export default connect(mapStateToProps, {register})(SignupForm);
-
 SignupForm.contextTypes = {
     router: PropTypes.object.isRequired
 }
 
 SignupForm.propTypes = {
-    register: PropTypes.func.isRequired
+    register: PropTypes.func.isRequired,
+      classes: PropTypes.object.isRequired
 }
+
+ 
+export default connect(mapStateToProps, {register})(withStyles(styleSheet)(SignupForm));
+
 

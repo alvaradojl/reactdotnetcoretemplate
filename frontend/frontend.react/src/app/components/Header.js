@@ -1,71 +1,109 @@
 import React from "react";
-import { NavLink, Redirect } from "react-router-dom";
+import { Link, NavLink, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { logout } from "./../actions/AuthActions";
 
-export class Header extends React.Component{
+import { withStyles, createStyleSheet } from 'material-ui/styles';
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+import Button from 'material-ui/Button';
+import IconButton from 'material-ui/IconButton';
+import MenuIcon from 'material-ui-icons/Menu'; 
 
-    logout(e){
-        e.preventDefault();
+
+const styleSheet = createStyleSheet({
+  root: {
+    marginTop: 5,
+    width: '100%',
+  },
+  flex: {
+    flex: 1,
+  },
+});
+
+class Header extends React.Component {
+
+ 
+    onClick(e){ 
+
         this.props.logout();
         this.context.router.history.push("/"); 
     }
-
+ 
     render(){
-
+        const classes = this.props.classes;
         const { isAuthenticated } = this.props.auth;
 
         const userLinks = (
-           <ul className="nav nav-pills float-right">
-                <li className="nav-item"><NavLink className="nav-link" activeStyle={{fontWeight: 'bold', color: 'yellow'}}  to="/events" exact>Events</NavLink> </li>
-                <li className="nav-item"><a className="nav-link" onClick={this.logout.bind(this)}  href="/logout">Log out</a></li> 
-            
-            </ul>
+         
+              <div>
+            <Button color="contrast" className={classes.button}  href="/events" >
+                Events   
+            </Button>
+
+            <Button  color="contrast" className={classes.button} onClick={this.onClick.bind(this)} >
+                Logout 
+            </Button>
+                  
+         </div>
+
+
         );
 
         const guestLinks = (
-            <ul className="nav nav-pills float-right">
-                   <li className="nav-item"><NavLink className="nav-link" activeStyle={{fontWeight: 'bold', color: 'yellow'}}  to="/signup">Sign Up</NavLink></li>
-                   <li className="nav-item"><NavLink className="nav-link" activeStyle={{fontWeight: 'bold', color: 'yellow'}}  to="/login">Login</NavLink></li>
-            </ul>
+          <div>
+            <Button color="contrast" className={classes.button}  href="/signup" >
+                Sign up    
+            </Button>
+
+            <Button  color="contrast" className={classes.button}  href="/login">
+                Login 
+            </Button>
+                  
+         </div>
         );
 
         return(
-            <div className="row">
-                <div className="header col-md-6">
-                    <nav>
-                        <ul className="nav nav-pills">
-                            <li className="nav-item"><NavLink className="nav-link" activeStyle={{fontWeight: 'bold', color: 'yellow'}}  to="/" exact>Home</NavLink></li>
-                            <li className="nav-item"><NavLink className="nav-link" activeStyle={{fontWeight: 'bold', color: 'yellow'}}  to="/greetings" exact>Greetings</NavLink></li>
+                <div className={classes.root}>
+                    <AppBar position="static" color="primary">
+                        <Toolbar>
+                            {/* <IconButton color="contrast" aria-label="Menu">
+                                <MenuIcon />
+                            </IconButton> */}
+                            <Typography type="title" color="inherit" className={classes.flex}>
+                                My React App
+                            </Typography>
                         
-                        </ul> 
-                    </nav>
-                </div>
-                <div className="header col-md-6">
-                    <nav>
-                     { isAuthenticated ? userLinks : guestLinks }
-                    </nav>
-                </div>
-                <h3 className="text-muted">React App</h3>
-            </div>
+                                { isAuthenticated ? userLinks : guestLinks }
+                        </Toolbar>
+                    </AppBar>
+                </div> 
         );
     }
 }
 
 Header.propTypes = {
     auth:PropTypes.object.isRequired,
-    logout : PropTypes.func.isRequired
+    logout : PropTypes.func.isRequired, 
 }
 
 Header.contextTypes = {
     router: PropTypes.object.isRequired
 }
 
+let StyledHeader = withStyles(styleSheet)(Header);
+
+// StyledHeader.propTypes = { 
+//     classes: PropTypes.object.isRequired,
+// }
+
+ 
 function mapStateToProps(state){
     return {
         auth: state.auth
     };
 }
 
-export default connect(mapStateToProps, { logout })(Header);
+export default connect(mapStateToProps, { logout })(StyledHeader);

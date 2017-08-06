@@ -10,21 +10,37 @@ import {setCurrentUser} from "./actions/AuthActions";
 import jwtDecode from "jwt-decode"; 
 import "./styles/main.scss";
 import "./images/favicon.ico";
+import createMuiTheme from 'material-ui/styles/theme';
+import { MuiThemeProvider } from 'material-ui/styles';
+import createPalette from 'material-ui/styles/palette';
+import purple from 'material-ui/colors/purple';
+import green from 'material-ui/colors/green';
+import red from 'material-ui/colors/red';
+import blue from 'material-ui/colors/blue'; 
+import pink from 'material-ui/colors/pink';
+
+
 const newHistory = createBrowserHistory();
-
-
-mystore.subscribe(() =>
-  console.log("mystore state callback on subscription:" + JSON.stringify(mystore.getState()))
-);
+ 
 
 if(localStorage.jwtToken){
       setAuthorizationToken(localStorage.jwtToken);
       mystore.dispatch(setCurrentUser(jwtDecode(localStorage.jwtToken)));
 }
 
+const theme = createMuiTheme({
+  palette: createPalette({
+    primary: pink,  
+    accent: green,
+    error: red,
+  }),
+});
+
 render(
-<Provider store={mystore}>
-      <BrowserRouter history={newHistory}>
+<Provider store={mystore}> 
+  <MuiThemeProvider theme={theme}>
+     <BrowserRouter history={newHistory}>
             <Route component={App} /> 
       </BrowserRouter>
+    </MuiThemeProvider> 
 </Provider>, document.getElementById("app"));

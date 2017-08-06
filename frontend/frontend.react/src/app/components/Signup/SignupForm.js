@@ -8,94 +8,84 @@ import Validator from "validator";
 import mystore from "./../../store.js";
 import {connect}  from "react-redux";  
 import {register}  from "./../../actions/RegisterActions";
-import { Field, reduxForm } from 'redux-form'
+import { Field, reduxForm } from 'redux-form';
+
+
+ const validateErrorsOnLoginForm = (values) => {
+    let errors = {};
+
+    if(!values.username){
+        errors.username="username is required.";
+    }
+
+      if(!values.email){
+        errors.email="email is required.";
+    }
+
+    if(!values.password){
+        errors.password="password is required.";
+    }
+ 
+    if(!values.passwordConfirmation){
+        errors.passwordConfirmation="passwordConfirmation is required.";
+    }
+    else{
+        if(!Validator.equals(values.password, values.passwordConfirmation)){
+            errors.passwordConfirmation="Passwords must match.";
+        }
+    }
+
+    if(!values.timezone){
+        errors.timezone="timezone is required.";
+    }
+
+    return errors;
+};
+
+const validateWarningsOnLoginForm = values => {
+  const warnings = {}
+  if (values.password && values.password.length<4) {
+    warnings.password = 'Password to short'
+  }
+  return warnings
+};
+
+const renderField = ({
+  input,
+  label,
+  type,
+  placeholder,
+  meta: { touched, error, warning }
+}) =>{
+    return (
+        <div className="form-group">
+            <label>{label}</label>
+            <div>
+                <input className="form-control" placeholder={placeholder && placeholder} {...input} type={type} />
+                {touched &&  
+                ((error &&  <span className="text-danger">  {error}  </span>) || 
+                (warning && <span className="text-warning"> {warning}  </span>))}
+            </div>
+        </div>
+    );
+}
 
 class SignupForm extends React.Component{
 
     constructor(props){
         super(props);
-        this.state = { 
-            username:"",
-            email:"",
-            password:"",
-            passwordConfirmation:"",
-            timezone:"",
-            errors: {},
-            success:"",
+        this.state = {  
+            errors: {}, 
             isLoading:false
         }
-
-        this.onSubmit = this.onSubmit.bind(this);
-        this.validateInput = this.validateInput.bind(this);
-        this.isValid= this.isValid.bind(this);
+        this.onSubmit=this.onSubmit.bind(this);
+ 
     }
-
-    validateInput(data){
-        let errors = {};
-
-        if(Validator.isEmpty(data.username)){
-            errors.username="username is required.";
-        }
-
-        if(Validator.isEmpty(data.email)){
-            errors.email="email is required.";
-        }
-        else{ 
-            if(!Validator.isEmail(data.email)){
-                errors.email="not a valid email.";
-            }
-        }
-
-        if(Validator.isEmpty(data.password)){
-            errors.password="password is required.";
-        }
-
-        if(Validator.isEmpty(data.passwordConfirmation)){
-            errors.passwordConfirmation="passwordConfirmation is required.";
-        }
-        else{
-            if(!Validator.equals(data.password, data.passwordConfirmation)){
-                errors.password="Passwords must match.";
-            }
-        }
-
-        if(Validator.isEmpty(data.timezone)){
-            errors.timezone="timezone is required.";
-        }
-  
-
-        return { errors, 
-            isValid: isEmpty(errors) 
-        }
-    }
-
-    isValid(values){
-        const { errors, isValid } = this.validateInput(values);
-
-        if(!isValid){
-            this.setState({errors});
-        }
-
-        return isValid;
-        //return true;
-    }
+ 
 
     onSubmit(values){
         
-        console.log("values obtained: " + JSON.stringify(values));
-        
-        let valuesToValidate={
-            username:'',
-            email:'',
-            password:'',
-            passwordConfirmation:'',
-            timezone:'',
-            ...values
-        };
-        
-        if(this.isValid(valuesToValidate)){
-             
-            this.setState({errors:{},isLoading:true});
+          this.setState({errors:{},isLoading:true});
              
             let registrationData = { 
                 username:values.username,
@@ -112,64 +102,57 @@ class SignupForm extends React.Component{
 
                 mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have signed in"}});
                 this.setState({isLoading:false});
+                this.context.router.history.push("/login");
             })
             .catch(result=>{ 
                 if(result.response){
                      this.setState({ errors:result.response.data.errors, isLoading:false}); 
                     mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to register."}});
                     console.log(JSON.stringify(result));
+                      this.setState({isLoading:false});
                 }   
             });
- 
-        
- 
-           }
+      
     }
 
     render(){
 
     const options = map(timezones, (val,key)=> <option key={val} value={val}>{key}</option>);
  
-    const { username, email, password, passwordConfirmation, timezone} = this.state;
+    const { errors, username, email, password, passwordConfirmation, timezone, isLoading} = this.state;
 
-    const { handleSubmit } = this.props;
+    const { handleSubmit, pristine, reset, submitting } = this.props
+   
 
         return(
              <form onSubmit={ handleSubmit(this.onSubmit) }>
                 <h1>Sign up</h1> 
 
- 
-                <div className="form-group">
-                    <label className="control-label">Username</label>
+                    <Field
+                    name="username"
+                    type="text"
+                    component={renderField}
+                    label="Username"
+                    placeholder="user1" />
 
-                    <Field name="username" className="form-control" component="input" type="text" />
-                    {this.state.errors.username && <span>{this.state.errors.username}</span>}
-                </div>
+                    <Field
+                    name="email"
+                    type="email"
+                    component={renderField}
+                    label="Email"
+                    placeholder="email@email.com" />
 
-                 <div className="form-group">
-                    <label className="control-label">Email</label>
-                    
-                    <Field name="email" className="form-control" component="input" type="text" />
- 
-                    {this.state.errors.email && <span>{this.state.errors.email}</span>}
-                </div>
+                <Field
+                    name="password"
+                    type="password"
+                    component={renderField}
+                    label="Password" />
 
-                <div className="form-group">
-                    <label className="control-label">Password</label>
-                    
-                   <Field name="password" className="form-control" component="input" type="text" />
-
-                   
-                    {this.state.errors.password && <span>{this.state.errors.password}</span>}
-                </div>
-
-                <div className="form-group">
-                    <label className="control-label">Password Confirmation</label>
-                    
-                     <Field name="passwordConfirmation" className="form-control" component="input" type="text" />
- 
-                     {this.state.errors.passwordConfirmation && <span>{this.state.errors.passwordConfirmation}</span>}
-                </div>
+                <Field
+                    name="passwordConfirmation"
+                    type="passwordConfirmation"
+                    component={renderField}
+                    label="Password Confirmation" />
 
                <div className="form-group">
                     <label className="control-label">Timezone</label>
@@ -184,7 +167,10 @@ class SignupForm extends React.Component{
                 </div>
 
                 <div className="form-group">
-                    <button type="submit" disabled={this.state.isLoading} className="btn btn-primary btn-lg">Sign up</button>
+                    <button type="submit" className="btn btn-primary btn-lg" disabled={submitting}>Submit</button>
+                    <button type="button" className="btn btn-default btn-lg" disabled={pristine || submitting} onClick={reset}>
+                        Clear Values
+                    </button>
                 </div>
             </form>
         );
@@ -209,5 +195,7 @@ SignupForm.propTypes = {
 SignupForm = connect(mapStateToProps, {register})(SignupForm);
 
 export default reduxForm({
-    form:'signup'
+    form:'signup',
+    validate:validateErrorsOnLoginForm,
+    warn:validateWarningsOnLoginForm
 })(SignupForm);

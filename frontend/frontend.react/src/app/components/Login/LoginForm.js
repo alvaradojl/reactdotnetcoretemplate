@@ -60,9 +60,7 @@ class LoginForm extends React.Component{
         this.state = { 
             isLoading:false
         };
-
-        this.onSubmit = this.onSubmit.bind(this);
-        this.onChange = this.onChange.bind(this);
+       this.onSubmit=this.onSubmit.bind(this);
     }
 
     

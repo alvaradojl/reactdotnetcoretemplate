@@ -8,8 +8,9 @@ import Validator from "validator";
 import mystore from "./../../store.js";
 import {connect}  from "react-redux";  
 import {register}  from "./../../actions/RegisterActions";
+import { Field, reduxForm } from 'redux-form'
 
-export class SignupForm extends React.Component{
+class SignupForm extends React.Component{
 
     constructor(props){
         super(props);
@@ -24,17 +25,9 @@ export class SignupForm extends React.Component{
             isLoading:false
         }
 
-        //console.log("props SignupForm: " + this.props.userSignupRequest);
-        this.onChange = this.onChange.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
         this.validateInput = this.validateInput.bind(this);
         this.isValid= this.isValid.bind(this);
-    }
-
-    onChange(e){
-        this.setState({
-            [e.target.name] : e.target.value
-        })
     }
 
     validateInput(data){
@@ -76,8 +69,8 @@ export class SignupForm extends React.Component{
         }
     }
 
-    isValid(){
-        const { errors, isValid } = this.validateInput(this.state);
+    isValid(values){
+        const { errors, isValid } = this.validateInput(values);
 
         if(!isValid){
             this.setState({errors});
@@ -87,33 +80,35 @@ export class SignupForm extends React.Component{
         //return true;
     }
 
-    onSubmit(e){
-       
-        e.preventDefault();
-
-        if(this.isValid()){
+    onSubmit(values){
+        
+        console.log("values obtained: " + JSON.stringify(values));
+        
+        let valuesToValidate={
+            username:'',
+            email:'',
+            password:'',
+            passwordConfirmation:'',
+            timezone:'',
+            ...values
+        };
+        
+        if(this.isValid(valuesToValidate)){
              
             this.setState({errors:{},isLoading:true});
              
             let registrationData = { 
-                username:this.state.username,
-                email:this.state.email,
-                password:this.state.password,
-                passwordConfirmation:this.state.passwordConfirmation,
-                timezone:this.state.timezone
+                username:values.username,
+                email:values.email,
+                password:values.password,
+                passwordConfirmation:values.passwordConfirmation,
+                timezone:values.timezone
             };
  
             this.props.register(registrationData) 
             .then(response => { 
                 console.log("the new user has been registered as: " + JSON.stringify(response.data));
 
-                this.setState({
-                    username:"",
-                    email:"",
-                    password:"",
-                    passwordConfirmation:"",
-                    timezone:""
-                });
 
                 mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have signed in"}});
                 this.setState({isLoading:false});
@@ -128,7 +123,7 @@ export class SignupForm extends React.Component{
  
         
  
-            }
+           }
     }
 
     render(){
@@ -137,40 +132,55 @@ export class SignupForm extends React.Component{
  
     const { username, email, password, passwordConfirmation, timezone} = this.state;
 
+    const { handleSubmit } = this.props;
+
         return(
-            <form onSubmit={this.onSubmit}>
-                <h1>Join our community</h1> 
+             <form onSubmit={ handleSubmit(this.onSubmit) }>
+                <h1>Sign up</h1> 
+
+ 
                 <div className="form-group">
                     <label className="control-label">Username</label>
-                    <input type="text" name="username" className="form-control" value={username || ''} onChange={this.onChange}/>
+
+                    <Field name="username" className="form-control" component="input" type="text" />
                     {this.state.errors.username && <span>{this.state.errors.username}</span>}
                 </div>
 
                  <div className="form-group">
                     <label className="control-label">Email</label>
-                    <input type="text" name="email" className="form-control" value={email || ''} onChange={this.onChange}/>
+                    
+                    <Field name="email" className="form-control" component="input" type="text" />
+ 
                     {this.state.errors.email && <span>{this.state.errors.email}</span>}
                 </div>
 
                 <div className="form-group">
                     <label className="control-label">Password</label>
-                    <input type="password" name="password" className="form-control" value={password || ''} onChange={this.onChange}/>
+                    
+                   <Field name="password" className="form-control" component="input" type="text" />
+
+                   
                     {this.state.errors.password && <span>{this.state.errors.password}</span>}
                 </div>
 
                 <div className="form-group">
                     <label className="control-label">Password Confirmation</label>
-                    <input type="password" name="passwordConfirmation" className="form-control" value={passwordConfirmation || ''} onChange={this.onChange}/>
+                    
+                     <Field name="passwordConfirmation" className="form-control" component="input" type="text" />
+ 
                      {this.state.errors.passwordConfirmation && <span>{this.state.errors.passwordConfirmation}</span>}
                 </div>
 
                <div className="form-group">
                     <label className="control-label">Timezone</label>
-                    <select  name="timezone" className="form-control" value={timezone || ''} onChange={this.onChange}>
+                    
+                    <Field name="timezone" className="form-control" component="select" >
                         <option value="" disabled>Choose your timezone</option>
                         {options}
-                    </select>
-                     {this.state.errors.timezone && <span>{this.state.errors.timnezone}</span>}
+                    </Field>
+  
+
+                     {this.state.errors.timezone && <span>{this.state.errors.timezone}</span>}
                 </div>
 
                 <div className="form-group">
@@ -196,4 +206,8 @@ SignupForm.propTypes = {
     register: PropTypes.func.isRequired
 }
 
-export default connect(mapStateToProps, {register})(SignupForm);
+SignupForm = connect(mapStateToProps, {register})(SignupForm);
+
+export default reduxForm({
+    form:'signup'
+})(SignupForm);

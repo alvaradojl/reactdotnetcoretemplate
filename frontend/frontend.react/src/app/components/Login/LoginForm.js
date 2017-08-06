@@ -7,8 +7,9 @@ import jwtDecode from "jwt-decode";
 import setAuthorizationToken from "./../../utils/setAuthorizationToken";
 import Validator from "validator"; 
 import isEmpty from "lodash/isEmpty";
+import { Field, reduxForm } from 'redux-form'
 
-export class LoginForm extends React.Component{
+class LoginForm extends React.Component{
     constructor(props){
         super(props);
         this.state = {
@@ -22,7 +23,7 @@ export class LoginForm extends React.Component{
         this.onChange = this.onChange.bind(this);
     }
 
-validateInput(data){
+    validateInput(data){
         let errors = {};
 
         if(Validator.isEmpty(data.identifier)){
@@ -38,55 +39,59 @@ validateInput(data){
         }
     }
 
-    isValid(){
-        // const { errors, isValid } = this.validateInput(this.state);
+    isValid(values){
+        const { errors, isValid } = this.validateInput(values);
 
-        // if(!isValid){
-        //     this.setState({errors});
-        // }
+        if(!isValid){
+            this.setState({errors});
+        }
 
-        // return isValid;
-        return true;
+        return isValid;
+       // return true;
     }
 
-onSubmit(e){
-    e.preventDefault();
+onSubmit(values){
+   
+        let valuesToValidate={
+            identifier:'',
+            password:'',
+            ...values
+        };
 
-        if(this.isValid()){
+        if(this.isValid(valuesToValidate)){
+            
+            this.setState({errors:{}, isLoading:true});
+            
+            let loginData = {
+                identifier : values.identifier,
+                password : values.password
+            }
+            
+            this.props.login(loginData)
+            .then(response => { 
+                let token = response.data.jwt;
+                console.log("the jwt token received is: " + token);
+                localStorage.setItem("jwtToken", token);
+                console.log("decoded jwt: " + JSON.stringify(jwtDecode(token)));
+            
+                mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have logged in"}});
         
-   this.setState({errors:{}, isLoading:true});
-    
-    let loginData = {
-        identifier : this.state.identifier,
-        password : this.state.password
-    }
-    
-    this.props.login(loginData)
-    .then(response => { 
-        let token = response.data.jwt;
-        console.log("the jwt token received is: " + token);
-        localStorage.setItem("jwtToken", token);
-        console.log("decoded jwt: " + JSON.stringify(jwtDecode(token)));
-       
-        mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have logged in"}});
- 
-        mystore.dispatch(setCurrentUser(jwtDecode(token)));
-          this.setState({errors:{}, isLoading:false});
-        setAuthorizationToken(token);
-        this.context.router.history.push("/"); 
- 
-    }
-    )
-    .catch(result=>{ 
-        if(result.response){
-            this.setState({ errors:result.response.data.errors, isLoading:false}); 
-            mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to log in."}});
-            console.log(JSON.stringify(result));
-        }   
-    });
+                mystore.dispatch(setCurrentUser(jwtDecode(token)));
+                this.setState({errors:{}, isLoading:false});
+                setAuthorizationToken(token);
+                this.context.router.history.push("/"); 
+        
+            }
+            )
+            .catch(result=>{ 
+                if(result.response){
+                    this.setState({ errors:result.response.data.errors, isLoading:false}); 
+                    mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to log in."}});
+                    console.log(JSON.stringify(result));
+                }   
+            });
 
         }
-  
 }
 
 onChange(e){
@@ -95,21 +100,26 @@ onChange(e){
 
     render(){
 
-const {errors, identifier, password, isLoading} = this.state;
-
+        const {errors, identifier, password, isLoading} = this.state;
+        const { handleSubmit } = this.props;
+        
         return(
         
-        <form onSubmit={this.onSubmit}>
+            <form onSubmit={ handleSubmit(this.onSubmit) }>
                 <h1>Login</h1>
                     <div className="form-group">
                     <label className="control-label">Username/Email</label>
-                    <input type="text" name="identifier" className="form-control" value={identifier || ''} onChange={this.onChange}/>
-                    {this.state.errors.identifier && <span>{this.state.errors.identifier}</span>}
+                    <Field name="identifier" className="form-control" component="input" type="text" />
+                 
+                  
+                   {this.state.errors.identifier && <span>{this.state.errors.identifier}</span>}
                 </div>
 
                 <div className="form-group">
                     <label className="control-label">Password</label>
-                    <input type="password" name="password" className="form-control" value={password || ''} onChange={this.onChange}/>
+                     <Field name="password" className="form-control" component="input" type="password" />
+                 
+                   
                     {this.state.errors.password && <span>{this.state.errors.password}</span>}
                 </div>
 
@@ -137,4 +147,9 @@ const mapStateToProps = (state) =>{
     }
 }
 
-export default connect(mapStateToProps, {login, setCurrentUser})(LoginForm);
+LoginForm = connect(mapStateToProps, {login, setCurrentUser})(LoginForm);
+
+export default reduxForm({
+    form:'login'
+})(LoginForm);
+ 

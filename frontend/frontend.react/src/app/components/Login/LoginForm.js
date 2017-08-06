@@ -59,26 +59,9 @@ const renderField = ({
  ...custom
 }) =>{
     return (
-        // <div className="form-group">
-        //     <label>{label}</label>
-        //     <div>
-        //         <input className="form-control" placeholder={placeholder && placeholder} {...input} type={type} />
-        //         {touched &&  
-        //         ((error &&  <span className="text-danger">  {error}  </span>) || 
-        //         (warning && <span className="text-warning"> {warning}  </span>))}
-        //     </div>
-        // </div>
+ 
 
 
-//  <div className="form-group">
-//             <label>{label}</label>
-//             <div>
-//                 <input className="form-control" placeholder={placeholder && placeholder} {...input} type={type} />
-//                 {touched &&  
-//                 ((error &&  <span className="text-danger">  {error}  </span>) || 
-//                 (warning && <span className="text-warning"> {warning}  </span>))}
-//             </div>
-//         </div>
 
                     //  <TextField
                     //         required
@@ -97,15 +80,16 @@ const renderField = ({
             <div>
                    <TextField  
                     {...input} 
-                     {...custom}
-                    label={label}    
+                    {...custom}
+                    label={label}  
+                    margin="normal"   
                     type={type}
                     InputProps={{ placeholder }} 
+                    helperText={error && touched && error} 
                     fullWidth /> 
 
-                    {touched &&  
-                    ((error &&  <span className="text-danger">  {error}  </span>) || 
-                    (warning && <span className="text-warning"> {warning}  </span>))}
+                    {touched &&   
+                    (warning && <span className="text-warning"> {warning}  </span>)}
             </div>
     );
 }
@@ -130,6 +114,8 @@ onSubmit(values){
         password : values.password
     }
     
+    mystore.dispatch({type:"TOGGLE_LOADING", status: true});
+    
     this.props.login(loginData)
     .then(response => { 
         let token = response.data.jwt;
@@ -138,7 +124,7 @@ onSubmit(values){
         console.log("decoded jwt: " + JSON.stringify(jwtDecode(token)));
     
         mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have logged in"}});
-
+        mystore.dispatch({type:"TOGGLE_LOADING", status: false});
         mystore.dispatch(setCurrentUser(jwtDecode(token)));
         this.setState({errors:{}, isLoading:false});
         setAuthorizationToken(token);
@@ -146,6 +132,7 @@ onSubmit(values){
 
     }).catch(result=>{ 
         if(result.response){
+            mystore.dispatch({type:"TOGGLE_LOADING", status: false});
             this.setState({ errors:result.response.data.errors, isLoading:false}); 
             mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to log in."}});
             console.log(JSON.stringify(result));
@@ -177,7 +164,7 @@ onSubmit(values){
                     </Typography>
 
                     <form onSubmit={ handleSubmit(this.onSubmit) }>
-                        <h1>Login</h1>
+                    
 
                         <Field
                             name="identifier"
@@ -211,7 +198,7 @@ onSubmit(values){
 
                                     <Button 
                                         type="submit" 
-                                        disabled={submitting}
+                                        disabled={pristine || submitting || this.state.isLoading}
                                         color="accent" 
                                         className={classes.button}
                                         style = {{  

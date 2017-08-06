@@ -38,41 +38,38 @@ export class SignupForm extends React.Component{
     }
 
     validateInput(data){
-        let errors = [];
+        let errors = {};
 
         if(Validator.isEmpty(data.username)){
-            errors.push("username is required.");
+            errors.username="username is required.";
         }
 
         if(Validator.isEmpty(data.email)){
-            errors.push("email is required.");
+            errors.email="email is required.";
         }
         else{ 
             if(!Validator.isEmail(data.email)){
-                errors.push("not a valid email.");
+                errors.email="not a valid email.";
             }
         }
 
         if(Validator.isEmpty(data.password)){
-            errors.push("password is required.");
+            errors.password="password is required.";
         }
 
         if(Validator.isEmpty(data.passwordConfirmation)){
-            errors.push("passwordConfirmation is required.");
+            errors.passwordConfirmation="passwordConfirmation is required.";
         }
         else{
             if(!Validator.equals(data.password, data.passwordConfirmation)){
-                errors.push("Passwords must match.");
+                errors.password="Passwords must match.";
             }
         }
 
         if(Validator.isEmpty(data.timezone)){
-            errors.push("timezone is required.");
+            errors.timezone="timezone is required.";
         }
- 
-     
-
-        //TODO: more validations
+  
 
         return { errors, 
             isValid: isEmpty(errors) 
@@ -80,14 +77,14 @@ export class SignupForm extends React.Component{
     }
 
     isValid(){
-        // const { errors, isValid } = this.validateInput(this.state);
+        const { errors, isValid } = this.validateInput(this.state);
 
-        // if(!isValid){
-        //     this.setState({errors});
-        // }
+        if(!isValid){
+            this.setState({errors});
+        }
 
-        // return isValid;
-        return true;
+        return isValid;
+        //return true;
     }
 
     onSubmit(e){
@@ -123,7 +120,7 @@ export class SignupForm extends React.Component{
             })
             .catch(result=>{ 
                 if(result.response){
-                    this.setState({ isLoading:false}); 
+                     this.setState({ errors:result.response.data.errors, isLoading:false}); 
                     mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to register."}});
                     console.log(JSON.stringify(result));
                 }   
@@ -137,47 +134,47 @@ export class SignupForm extends React.Component{
     render(){
 
     const options = map(timezones, (val,key)=> <option key={val} value={val}>{key}</option>);
-
-    const errorsRetrieved = map(this.state.errors, (item, index)=> <li key={index}>{item}</li>);
  
+    const { username, email, password, passwordConfirmation, timezone} = this.state;
+
         return(
             <form onSubmit={this.onSubmit}>
                 <h1>Join our community</h1> 
                 <div className="form-group">
                     <label className="control-label">Username</label>
-                    <input type="text" name="username" className="form-control" value={this.state.username} onChange={this.onChange}/>
-
+                    <input type="text" name="username" className="form-control" value={username || ''} onChange={this.onChange}/>
+                    {this.state.errors.username && <span>{this.state.errors.username}</span>}
                 </div>
 
                  <div className="form-group">
                     <label className="control-label">Email</label>
-                    <input type="text" name="email" className="form-control" value={this.state.email} onChange={this.onChange}/>
-
+                    <input type="text" name="email" className="form-control" value={email || ''} onChange={this.onChange}/>
+                    {this.state.errors.email && <span>{this.state.errors.email}</span>}
                 </div>
 
                 <div className="form-group">
                     <label className="control-label">Password</label>
-                    <input type="password" name="password" className="form-control" value={this.state.password} onChange={this.onChange}/>
-
+                    <input type="password" name="password" className="form-control" value={password || ''} onChange={this.onChange}/>
+                    {this.state.errors.password && <span>{this.state.errors.password}</span>}
                 </div>
 
                 <div className="form-group">
                     <label className="control-label">Password Confirmation</label>
-                    <input type="password" name="passwordConfirmation" className="form-control" value={this.state.passwordConfirmation} onChange={this.onChange}/>
-
+                    <input type="password" name="passwordConfirmation" className="form-control" value={passwordConfirmation || ''} onChange={this.onChange}/>
+                     {this.state.errors.passwordConfirmation && <span>{this.state.errors.passwordConfirmation}</span>}
                 </div>
 
                <div className="form-group">
                     <label className="control-label">Timezone</label>
-                    <select  name="timezone" className="form-control" value={this.state.timezone} onChange={this.onChange}>
+                    <select  name="timezone" className="form-control" value={timezone || ''} onChange={this.onChange}>
                         <option value="" disabled>Choose your timezone</option>
                         {options}
                     </select>
-
+                     {this.state.errors.timezone && <span>{this.state.errors.timnezone}</span>}
                 </div>
 
                 <div className="form-group">
-                    <button disabled={this.state.isLoading} className="btn btn-primary btn-lg">Sign up</button>
+                    <button type="submit" disabled={this.state.isLoading} className="btn btn-primary btn-lg">Sign up</button>
                 </div>
             </form>
         );
@@ -190,9 +187,7 @@ const mapStateToProps = (state) =>{
         user:state.user
     }
 }
-
-export default connect(mapStateToProps, {register})(SignupForm);
-
+ 
 SignupForm.contextTypes = {
     router: PropTypes.object.isRequired
 }
@@ -201,3 +196,4 @@ SignupForm.propTypes = {
     register: PropTypes.func.isRequired
 }
 
+export default connect(mapStateToProps, {register})(SignupForm);

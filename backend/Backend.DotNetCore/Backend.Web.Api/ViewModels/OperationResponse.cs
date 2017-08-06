@@ -7,7 +7,7 @@ namespace Backend.Web.Api.ViewModels
 {
     public class OperationResponse
     {
-        public IEnumerable<string> Errors { get; set; }
+        public Dictionary<string,string> Errors { get; set; }
 
         public bool IsValid { get; set; }
     }

@@ -9,6 +9,7 @@ using Backend.Web.Api.ViewModels;
 using System.Threading;
 using Backend.Web.Api.Dtos;
 using Backend.Web.Api.Data;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Backend.Web.Api.Controllers
 {
@@ -52,7 +53,11 @@ namespace Backend.Web.Api.Controllers
                 }
                 else
                 {
-                    return NotFound(new OperationResponse() { IsValid = false, Errors = new string[] { "User does not exists." } });
+                    return NotFound(new OperationResponse() { IsValid = false,
+                        Errors = new Dictionary<string, string>(){
+                            { "identifier", "Identifier does not exists." }
+                        }
+                    });
                 }
             }
            
@@ -69,12 +74,20 @@ namespace Backend.Web.Api.Controllers
             {
                 if (_userRepository.GetByUsername(model.Username) != null)
                 {
-                    return BadRequest(new OperationResponse() { IsValid = false, Errors = new string[] { "Username already exists." } });
+                    return BadRequest(new OperationResponse() { IsValid = false,
+                        Errors = new Dictionary<string, string>(){
+                            { "username", "Username already exists." }
+                        }
+                    });
                 }
 
                 if(_userRepository.GetByEmail(model.Email) != null)
                 {
-                    return BadRequest(new OperationResponse() { IsValid = false, Errors = new string[] { "Email already exists." } });
+                    return BadRequest(new OperationResponse() { IsValid = false,
+                        Errors = new Dictionary<string, string>(){
+                            { "email", "Email already exists." }
+                        }
+                    });
                 }
 
                 var parsedUser = new UserDto() { Username = model.Username, Email = model.Email, ClearTextPassword = model.Password, Timezone = model.Timezone };
@@ -94,13 +107,18 @@ namespace Backend.Web.Api.Controllers
             }
             else
             {
-                // extract the list of validation errors
-                IEnumerable<string> modelStateErrors =
-                    from state in ModelState.Values
-                    from error in state.Errors
-                    select error.ErrorMessage;
+
+              
+                var listErrors = ModelState.ToDictionary(
+                  m => m.Key,
+                  m => m.Value.Errors
+                    .Select(s => s.ErrorMessage)
+                    .FirstOrDefault(s => s != null)
+                );
                  
-               return BadRequest(new OperationResponse() { IsValid = false, Errors = modelStateErrors});
+                
+                 
+               return BadRequest(new OperationResponse() { IsValid = false, Errors = listErrors});
             }
            
         }
@@ -114,7 +132,13 @@ namespace Backend.Web.Api.Controllers
             {
                 if (_userRepository.GetByUsername(username) == null)
                 {
-                    return NotFound(new OperationResponse() { IsValid = false, Errors = new string[] { "User does not exists." } });
+                    return NotFound(new OperationResponse()
+                    {
+                        IsValid = false,
+                        Errors = new Dictionary<string, string>(){
+                            { "username", "User does not exists." }
+                        }
+                    });
                 }
 
                 var updatedUser = new UserDto() { Username = username, Email = model.Email, ClearTextPassword = model.Password, Timezone = model.Timezone };
@@ -125,14 +149,18 @@ namespace Backend.Web.Api.Controllers
             }
             else
             {
-                // extract the list of validation errors
-                IEnumerable<string> modelStateErrors =
-                    from state in ModelState.Values
-                    from error in state.Errors
-                    select error.ErrorMessage;
 
-                 
-                return BadRequest(new OperationResponse() { IsValid = false, Errors = modelStateErrors });
+
+                var listErrors = ModelState.ToDictionary(
+                 m => m.Key,
+                 m => m.Value.Errors
+                   .Select(s => s.ErrorMessage)
+                   .FirstOrDefault(s => s != null)
+               );
+
+
+
+                return BadRequest(new OperationResponse() { IsValid = false, Errors = listErrors });
             }
         }
         

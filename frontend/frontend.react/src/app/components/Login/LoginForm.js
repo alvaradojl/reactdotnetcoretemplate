@@ -8,6 +8,23 @@ import setAuthorizationToken from "./../../utils/setAuthorizationToken";
 import Validator from "validator"; 
 import isEmpty from "lodash/isEmpty";
 import { Field, reduxForm } from 'redux-form'
+import Typography from 'material-ui/Typography';
+import Grid from 'material-ui/Grid';
+import TextField from 'material-ui/TextField';
+import { withStyles, createStyleSheet } from 'material-ui/styles';
+import Button from 'material-ui/Button';  
+
+
+const styleSheet = createStyleSheet(theme => ({
+  container: {
+     flexGrow: 1,
+      marginTop: 30,
+  },
+  textField: {
+    marginLeft: theme.spacing.unit,
+    marginRight: theme.spacing.unit
+  } 
+}));
 
 
  const validateErrorsOnLoginForm = (values) => {
@@ -26,7 +43,7 @@ import { Field, reduxForm } from 'redux-form'
 
 const validateWarningsOnLoginForm = values => {
   const warnings = {}
-  if (values.password && values.password.length<4) {
+  if (values.password && values.password.length<3) {
     warnings.password = 'Password to short'
   }
   return warnings
@@ -38,18 +55,58 @@ const renderField = ({
   label,
   type,
   placeholder,
-  meta: { touched, error, warning }
+  meta: { touched, error, warning },
+ ...custom
 }) =>{
     return (
-        <div className="form-group">
-            <label>{label}</label>
+        // <div className="form-group">
+        //     <label>{label}</label>
+        //     <div>
+        //         <input className="form-control" placeholder={placeholder && placeholder} {...input} type={type} />
+        //         {touched &&  
+        //         ((error &&  <span className="text-danger">  {error}  </span>) || 
+        //         (warning && <span className="text-warning"> {warning}  </span>))}
+        //     </div>
+        // </div>
+
+
+//  <div className="form-group">
+//             <label>{label}</label>
+//             <div>
+//                 <input className="form-control" placeholder={placeholder && placeholder} {...input} type={type} />
+//                 {touched &&  
+//                 ((error &&  <span className="text-danger">  {error}  </span>) || 
+//                 (warning && <span className="text-warning"> {warning}  </span>))}
+//             </div>
+//         </div>
+
+                    //  <TextField
+                    //         required
+                    //         id="identifier"
+                    //         name="identifier"
+                    //         label={label}
+                    //         className={classes.textField}
+                    //         value={this.state.identifier} 
+                    //         onChange={this.onChange} 
+                    //         margin="normal" 
+                    //         InputProps={{ placeholder: {placeholder} }}
+                    //         fullWidth
+                    //         helperText={this.state.errors.identifier}
+                    //         error={!isEmpty(this.state.errors.identifier)}
+                    //     />
             <div>
-                <input className="form-control" placeholder={placeholder && placeholder} {...input} type={type} />
-                {touched &&  
-                ((error &&  <span className="text-danger">  {error}  </span>) || 
-                (warning && <span className="text-warning"> {warning}  </span>))}
+                   <TextField  
+                    {...input} 
+                     {...custom}
+                    label={label}    
+                    type={type}
+                    InputProps={{ placeholder }} 
+                    fullWidth /> 
+
+                    {touched &&  
+                    ((error &&  <span className="text-danger">  {error}  </span>) || 
+                    (warning && <span className="text-warning"> {warning}  </span>))}
             </div>
-        </div>
     );
 }
 
@@ -85,11 +142,9 @@ onSubmit(values){
         mystore.dispatch(setCurrentUser(jwtDecode(token)));
         this.setState({errors:{}, isLoading:false});
         setAuthorizationToken(token);
-        this.context.router.history.push("/"); 
+        this.context.router.history.push("/events"); 
 
-    }
-    )
-    .catch(result=>{ 
+    }).catch(result=>{ 
         if(result.response){
             this.setState({ errors:result.response.data.errors, isLoading:false}); 
             mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to log in."}});
@@ -98,47 +153,96 @@ onSubmit(values){
     });
 }
 
-onChange(e){
-    this.setState({[e.target.name]: e.target.value});
-}
+    onChange(e){
+        this.setState({[e.target.name]: e.target.value});
+    }
 
     render(){
         const { handleSubmit, pristine, reset, submitting } = this.props
         const {errors, identifier, password, isLoading} = this.state;
-       
+        const { classes } = this.props;
         
         return(
-        
-            <form onSubmit={ handleSubmit(this.onSubmit) }>
-                <h1>Login</h1>
-                  
-                <Field
-                    name="identifier"
-                    type="text"
-                    component={renderField}
-                    label="Username/Email"
-                    placeholder="email@email.com" />
 
-                <Field
-                    name="password"
-                    type="password"
-                    component={renderField}
-                    label="Password" />
- 
-                <div className="form-group">
-                    <button type="submit" className="btn btn-primary btn-lg" disabled={submitting}>Login</button>
-                    <button type="button" className="btn btn-default btn-lg" disabled={pristine || submitting} onClick={reset}>
-                        Clear Values
-                    </button>
-                </div>
-            </form>
+
+            <div className={classes.container}>
+
+                <Grid container >
+                <Grid item md={3}>
+
+                </Grid>
+                <Grid item md={6}> 
+                    <Typography type="display2" gutterBottom>
+                        Login
+                    </Typography>
+
+                    <form onSubmit={ handleSubmit(this.onSubmit) }>
+                        <h1>Login</h1>
+
+                        <Field
+                            name="identifier"
+                            type="text"
+                            component={renderField}
+                            className={classes.textField}
+                            label="Username/Email"
+                            placeholder="email@email.com" />
+                        <br/>
+                        <br/>
+                        <Field
+                            name="password"
+                            type="password"
+                            className={classes.textField}
+                            component={renderField}
+                            label="Password"
+                            placeholder=""  />
+                        <br/>
+                        <br/>
+
+
+
+                        <Grid container className={classes.root}>
+                            <Grid item md={12}>
+                                <Grid
+                                    container
+                                    className={classes.demo}
+                                    align="center"
+                                    direction="row"
+                                    justify="center">
+
+                                    <Button 
+                                        type="submit" 
+                                        disabled={submitting}
+                                        color="accent" 
+                                        className={classes.button}
+                                        style = {{  
+                                        width:'100px'    
+                                        }}>
+                                    Login
+                                    </Button>
+
+
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </form> 
+                        
+                 
+                </Grid>
+                <Grid item md={3}>
+                  
+                </Grid>
+            </Grid>
+       </div>
+
+        
         );
     }
 }
 
 LoginForm.propTypes = {
     login: PropTypes.func.isRequired,
-    setCurrentUser: PropTypes.func.isRequired
+    setCurrentUser: PropTypes.func.isRequired,
+    classes: PropTypes.object.isRequired
 }
 
 LoginForm.contextTypes = {
@@ -148,11 +252,12 @@ LoginForm.contextTypes = {
 const mapStateToProps = (state) =>{
     return {
         messages:state.messages, 
-        auth:state.auth
+        auth:state.auth,
+        isLoading:state.isLoading
     }
 }
 
-LoginForm = connect(mapStateToProps, {login, setCurrentUser})(LoginForm);
+LoginForm = connect(mapStateToProps, {login, setCurrentUser})(withStyles(styleSheet)(LoginForm));
 
 export default reduxForm({
     form:'login',

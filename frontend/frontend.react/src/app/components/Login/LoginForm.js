@@ -9,13 +9,55 @@ import Validator from "validator";
 import isEmpty from "lodash/isEmpty";
 import { Field, reduxForm } from 'redux-form'
 
+
+ const validateErrorsOnLoginForm = (values) => {
+    let errors = {};
+
+    if(!values.identifier){
+        errors.identifier="identifier is required.";
+    }
+
+    if(!values.password){
+        errors.password="password is required.";
+    }
+
+    return errors;
+}
+
+const validateWarningsOnLoginForm = values => {
+  const warnings = {}
+  if (values.password && values.password.length<4) {
+    warnings.password = 'Password to short'
+  }
+  return warnings
+}
+
+
+const renderField = ({
+  input,
+  label,
+  type,
+  placeholder,
+  meta: { touched, error, warning }
+}) =>{
+    return (
+        <div className="form-group">
+            <label>{label}</label>
+            <div>
+                <input className="form-control" placeholder={placeholder && placeholder} {...input} type={type} />
+                {touched &&  
+                ((error &&  <span className="text-danger">  {error}  </span>) || 
+                (warning && <span className="text-warning"> {warning}  </span>))}
+            </div>
+        </div>
+    );
+}
+
+
 class LoginForm extends React.Component{
     constructor(props){
         super(props);
-        this.state = {
-            identifier:"",
-            password:"",
-            errors:{},
+        this.state = { 
             isLoading:false
         };
 
@@ -23,75 +65,39 @@ class LoginForm extends React.Component{
         this.onChange = this.onChange.bind(this);
     }
 
-    validateInput(data){
-        let errors = {};
-
-        if(Validator.isEmpty(data.identifier)){
-            errors.identifier="identifier is required.";
-        }
- 
-        if(Validator.isEmpty(data.password)){
-            errors.password="password is required.";
-        }
- 
-        return { errors, 
-            isValid: isEmpty(errors) 
-        }
-    }
-
-    isValid(values){
-        const { errors, isValid } = this.validateInput(values);
-
-        if(!isValid){
-            this.setState({errors});
-        }
-
-        return isValid;
-       // return true;
-    }
-
+    
 onSubmit(values){
    
-        let valuesToValidate={
-            identifier:'',
-            password:'',
-            ...values
-        };
+    this.setState({errors:{}, isLoading:true});
+    
+    let loginData = {
+        identifier : values.identifier,
+        password : values.password
+    }
+    
+    this.props.login(loginData)
+    .then(response => { 
+        let token = response.data.jwt;
+        console.log("the jwt token received is: " + token);
+        localStorage.setItem("jwtToken", token);
+        console.log("decoded jwt: " + JSON.stringify(jwtDecode(token)));
+    
+        mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have logged in"}});
 
-        if(this.isValid(valuesToValidate)){
-            
-            this.setState({errors:{}, isLoading:true});
-            
-            let loginData = {
-                identifier : values.identifier,
-                password : values.password
-            }
-            
-            this.props.login(loginData)
-            .then(response => { 
-                let token = response.data.jwt;
-                console.log("the jwt token received is: " + token);
-                localStorage.setItem("jwtToken", token);
-                console.log("decoded jwt: " + JSON.stringify(jwtDecode(token)));
-            
-                mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have logged in"}});
-        
-                mystore.dispatch(setCurrentUser(jwtDecode(token)));
-                this.setState({errors:{}, isLoading:false});
-                setAuthorizationToken(token);
-                this.context.router.history.push("/"); 
-        
-            }
-            )
-            .catch(result=>{ 
-                if(result.response){
-                    this.setState({ errors:result.response.data.errors, isLoading:false}); 
-                    mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to log in."}});
-                    console.log(JSON.stringify(result));
-                }   
-            });
+        mystore.dispatch(setCurrentUser(jwtDecode(token)));
+        this.setState({errors:{}, isLoading:false});
+        setAuthorizationToken(token);
+        this.context.router.history.push("/"); 
 
-        }
+    }
+    )
+    .catch(result=>{ 
+        if(result.response){
+            this.setState({ errors:result.response.data.errors, isLoading:false}); 
+            mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to log in."}});
+            console.log(JSON.stringify(result));
+        }   
+    });
 }
 
 onChange(e){
@@ -99,32 +105,33 @@ onChange(e){
 }
 
     render(){
-
+        const { handleSubmit, pristine, reset, submitting } = this.props
         const {errors, identifier, password, isLoading} = this.state;
-        const { handleSubmit } = this.props;
+       
         
         return(
         
             <form onSubmit={ handleSubmit(this.onSubmit) }>
                 <h1>Login</h1>
-                    <div className="form-group">
-                    <label className="control-label">Username/Email</label>
-                    <Field name="identifier" className="form-control" component="input" type="text" />
-                 
                   
-                   {this.state.errors.identifier && <span>{this.state.errors.identifier}</span>}
-                </div>
+                <Field
+                    name="identifier"
+                    type="text"
+                    component={renderField}
+                    label="Username/Email"
+                    placeholder="email@email.com" />
 
+                <Field
+                    name="password"
+                    type="password"
+                    component={renderField}
+                    label="Password" />
+ 
                 <div className="form-group">
-                    <label className="control-label">Password</label>
-                     <Field name="password" className="form-control" component="input" type="password" />
-                 
-                   
-                    {this.state.errors.password && <span>{this.state.errors.password}</span>}
-                </div>
-
-                <div className="form-group">
-                    <button type="submit" className="btn btn-primary btn-lg" disabled={isLoading}>Login</button>
+                    <button type="submit" className="btn btn-primary btn-lg" disabled={submitting}>Login</button>
+                    <button type="button" className="btn btn-default btn-lg" disabled={pristine || submitting} onClick={reset}>
+                        Clear Values
+                    </button>
                 </div>
             </form>
         );
@@ -150,6 +157,8 @@ const mapStateToProps = (state) =>{
 LoginForm = connect(mapStateToProps, {login, setCurrentUser})(LoginForm);
 
 export default reduxForm({
-    form:'login'
+    form:'login',
+    validate:validateErrorsOnLoginForm,
+    warn:validateWarningsOnLoginForm
 })(LoginForm);
  

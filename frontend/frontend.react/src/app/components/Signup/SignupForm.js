@@ -3,72 +3,20 @@ import timezones from "./../../data/timezones";
 import map from "lodash/map";
 import PropTypes from "prop-types";
 import classnames from "classnames"; 
-import isEmpty from "lodash/isEmpty";
-import Validator from "validator"; 
+import isEmpty from "lodash/isEmpty"; 
 import mystore from "./../../store.js";
 import {connect}  from "react-redux";  
 import {register}  from "./../../actions/RegisterActions";
 import { Field, reduxForm } from 'redux-form';
+import  styleSheet  from "./styleSheet";
+import { validateErrorsOnSignupForm, validateWarningsOnSignupForm } from "./signupFormValidations";
+import { RenderTextField, RenderAutosuggestion } from "./../MaterialUi/RenderField";
+import { withStyles } from 'material-ui/styles';
+import Typography from 'material-ui/Typography';
+import Grid from 'material-ui/Grid'; 
+import Button from 'material-ui/Button';  
 
 
- const validateErrorsOnLoginForm = (values) => {
-    let errors = {};
-
-    if(!values.username){
-        errors.username="username is required.";
-    }
-
-      if(!values.email){
-        errors.email="email is required.";
-    }
-
-    if(!values.password){
-        errors.password="password is required.";
-    }
- 
-    if(!values.passwordConfirmation){
-        errors.passwordConfirmation="passwordConfirmation is required.";
-    }
-    else{
-        if(!Validator.equals(values.password, values.passwordConfirmation)){
-            errors.passwordConfirmation="Passwords must match.";
-        }
-    }
-
-    if(!values.timezone){
-        errors.timezone="timezone is required.";
-    }
-
-    return errors;
-};
-
-const validateWarningsOnLoginForm = values => {
-  const warnings = {}
-  if (values.password && values.password.length<4) {
-    warnings.password = 'Password to short'
-  }
-  return warnings
-};
-
-const renderField = ({
-  input,
-  label,
-  type,
-  placeholder,
-  meta: { touched, error, warning }
-}) =>{
-    return (
-        <div className="form-group">
-            <label>{label}</label>
-            <div>
-                <input className="form-control" placeholder={placeholder && placeholder} {...input} type={type} />
-                {touched &&  
-                ((error &&  <span className="text-danger">  {error}  </span>) || 
-                (warning && <span className="text-warning"> {warning}  </span>))}
-            </div>
-        </div>
-    );
-}
 
 class SignupForm extends React.Component{
 
@@ -85,33 +33,35 @@ class SignupForm extends React.Component{
 
     onSubmit(values){
         
-          this.setState({errors:{},isLoading:true});
-             
-            let registrationData = { 
-                username:values.username,
-                email:values.email,
-                password:values.password,
-                passwordConfirmation:values.passwordConfirmation,
-                timezone:values.timezone
-            };
- 
-            this.props.register(registrationData) 
-            .then(response => { 
-                console.log("the new user has been registered as: " + JSON.stringify(response.data));
+        this.setState({errors:{},isLoading:true});
+            
+        let registrationData = { 
+            username:values.username,
+            email:values.email,
+            password:values.password,
+            passwordConfirmation:values.passwordConfirmation,
+            timezone:values.timezone
+        };
 
-
-                mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have signed in"}});
-                this.setState({isLoading:false});
-                this.context.router.history.push("/login");
-            })
-            .catch(result=>{ 
-                if(result.response){
-                     this.setState({ errors:result.response.data.errors, isLoading:false}); 
-                    mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to register."}});
-                    console.log(JSON.stringify(result));
-                      this.setState({isLoading:false});
-                }   
-            });
+        let self = this;
+        
+        mystore.dispatch({type:"TOGGLE_LOADING", status: true});
+        this.props.register(registrationData) 
+        .then(response => { 
+            
+            mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have signed in"}});
+            self.setState({isLoading:false});
+            mystore.dispatch({type:"TOGGLE_LOADING", status: false});
+            self.context.router.history.push("/login");
+        })
+        .catch(response => { 
+                mystore.dispatch({type:"TOGGLE_LOADING", status: false});
+                self.setState({isLoading:false});
+                mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to register."}});
+            if(result.response){
+                self.setState({ errors:result.response.data.errors});  
+            }   
+        });
       
     }
 
@@ -123,56 +73,108 @@ class SignupForm extends React.Component{
 
     const { handleSubmit, pristine, reset, submitting } = this.props
    
+    const { classes } = this.props;
 
         return(
-             <form onSubmit={ handleSubmit(this.onSubmit) }>
-                <h1>Sign up</h1> 
 
-                    <Field
-                    name="username"
-                    type="text"
-                    component={renderField}
-                    label="Username"
-                    placeholder="user1" />
 
-                    <Field
-                    name="email"
-                    type="email"
-                    component={renderField}
-                    label="Email"
-                    placeholder="email@email.com" />
+            <div className={classes.container}>
 
-                <Field
-                    name="password"
-                    type="password"
-                    component={renderField}
-                    label="Password" />
-
-                <Field
-                    name="passwordConfirmation"
-                    type="passwordConfirmation"
-                    component={renderField}
-                    label="Password Confirmation" />
-
-               <div className="form-group">
-                    <label className="control-label">Timezone</label>
+                <Grid container>
+                    <Grid item md={3}>
                     
-                    <Field name="timezone" className="form-control" component="select" >
-                        <option value="" disabled>Choose your timezone</option>
-                        {options}
-                    </Field>
-  
+                    </Grid>
+                    <Grid item md={6}>
+                        
+                    
+                        <Typography type="display2" gutterBottom>
+                            Sign up
+                        </Typography>
 
-                     {this.state.errors.timezone && <span>{this.state.errors.timezone}</span>}
-                </div>
+                       <form onSubmit={ handleSubmit(this.onSubmit) }>
+    
+                            <Field
+                            name="username"
+                            type="text"
+                            component={RenderTextField}
+                            className={classes.textField}
+                            label="Username"
+                            placeholder="user1" />
+    
+                            <br/>
+                            <Field
+                            name="email"
+                            type="text"
+                            component={RenderTextField}
+                            className={classes.textField}
+                            label="Email"
+                            placeholder="user1@email.com" />
+                            <br/>
+                        
+                            <Field
+                            name="password"
+                            type="password"
+                            component={RenderTextField}
+                            className={classes.textField}
+                            label="Password"
+                            placeholder="" />
+                            <br/>
 
-                <div className="form-group">
-                    <button type="submit" className="btn btn-primary btn-lg" disabled={submitting}>Submit</button>
-                    <button type="button" className="btn btn-default btn-lg" disabled={pristine || submitting} onClick={reset}>
-                        Clear Values
-                    </button>
-                </div>
-            </form>
+                             <Field
+                            name="passwordConfirmation"
+                            type="password"
+                            component={RenderTextField}
+                            className={classes.textField}
+                            label="Password Confirmation"
+                            placeholder="" />
+                          
+                            <br/>
+                            <br/>
+                            <Field 
+                            id="timezone" 
+                            name="timezone"   
+                            component={RenderAutosuggestion}
+                            label="Timezone"  
+                            />
+                            <br/>
+
+                            <Grid container className={classes.root}>
+                                <Grid item md={12}>
+                                    <Grid
+                                        container 
+                                        align="center"
+                                        direction="row"
+                                        justify="center">
+
+
+                                       <Button 
+                                        type="submit" 
+                                        disabled={pristine || submitting || this.state.isLoading}
+                                        color="accent" 
+                                        className={classes.button}
+                                        style = {{  
+                                        width:'100px'    
+                                        }}>
+                                        Signup
+                                        </Button>
+
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+
+                        
+                        </form>
+
+                    </Grid> 
+                    <Grid item md={3}>
+                        
+                    </Grid> 
+                </Grid> 
+            </div>
+
+
+
+            
         );
     }
 }
@@ -189,13 +191,15 @@ SignupForm.contextTypes = {
 }
 
 SignupForm.propTypes = {
-    register: PropTypes.func.isRequired
+    register: PropTypes.func.isRequired,
+    classes: PropTypes.object.isRequired
 }
 
-SignupForm = connect(mapStateToProps, {register})(SignupForm);
+SignupForm = connect(mapStateToProps, {register})(withStyles(styleSheet)(SignupForm));
 
 export default reduxForm({
     form:'signup',
-    validate:validateErrorsOnLoginForm,
-    warn:validateWarningsOnLoginForm
+    validate:validateErrorsOnSignupForm,
+    warn:validateWarningsOnSignupForm
 })(SignupForm);
+

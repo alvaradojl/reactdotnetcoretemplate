@@ -12,13 +12,7 @@ import "./styles/main.scss";
 import "./images/favicon.ico";
 import createMuiTheme from 'material-ui/styles/theme';
 import { MuiThemeProvider } from 'material-ui/styles';
-import createPalette from 'material-ui/styles/palette';
-import purple from 'material-ui/colors/purple';
-import green from 'material-ui/colors/green';
-import red from 'material-ui/colors/red';
-import blue from 'material-ui/colors/blue'; 
-import pink from 'material-ui/colors/pink';
-
+import {themePalette} from "./styles/MaterialUi/themePalette";
 
 const newHistory = createBrowserHistory();
  
@@ -29,11 +23,7 @@ if(localStorage.jwtToken){
 }
 
 const theme = createMuiTheme({
-  palette: createPalette({
-    primary: pink,  
-    accent: green,
-    error: red,
-  }),
+  palette: themePalette
 });
 
 render(

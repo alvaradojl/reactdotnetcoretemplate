@@ -9,90 +9,12 @@ import Validator from "validator";
 import isEmpty from "lodash/isEmpty";
 import { Field, reduxForm } from 'redux-form'
 import Typography from 'material-ui/Typography';
-import Grid from 'material-ui/Grid';
-import TextField from 'material-ui/TextField';
-import { withStyles, createStyleSheet } from 'material-ui/styles';
+import Grid from 'material-ui/Grid'; 
+import { withStyles } from 'material-ui/styles';
 import Button from 'material-ui/Button';  
-
-
-const styleSheet = createStyleSheet(theme => ({
-  container: {
-     flexGrow: 1,
-      marginTop: 30,
-  },
-  textField: {
-    marginLeft: theme.spacing.unit,
-    marginRight: theme.spacing.unit
-  } 
-}));
-
-
- const validateErrorsOnLoginForm = (values) => {
-    let errors = {};
-
-    if(!values.identifier){
-        errors.identifier="identifier is required.";
-    }
-
-    if(!values.password){
-        errors.password="password is required.";
-    }
-
-    return errors;
-}
-
-const validateWarningsOnLoginForm = values => {
-  const warnings = {}
-  if (values.password && values.password.length<3) {
-    warnings.password = 'Password to short'
-  }
-  return warnings
-}
-
-
-const renderField = ({
-  input,
-  label,
-  type,
-  placeholder,
-  meta: { touched, error, warning },
- ...custom
-}) =>{
-    return (
- 
-
-
-
-                    //  <TextField
-                    //         required
-                    //         id="identifier"
-                    //         name="identifier"
-                    //         label={label}
-                    //         className={classes.textField}
-                    //         value={this.state.identifier} 
-                    //         onChange={this.onChange} 
-                    //         margin="normal" 
-                    //         InputProps={{ placeholder: {placeholder} }}
-                    //         fullWidth
-                    //         helperText={this.state.errors.identifier}
-                    //         error={!isEmpty(this.state.errors.identifier)}
-                    //     />
-            <div>
-                   <TextField  
-                    {...input} 
-                    {...custom}
-                    label={label}  
-                    margin="normal"   
-                    type={type}
-                    InputProps={{ placeholder }} 
-                    helperText={error && touched && error} 
-                    fullWidth /> 
-
-                    {touched &&   
-                    (warning && <span className="text-warning"> {warning}  </span>)}
-            </div>
-    );
-}
+import styleSheet from "./styleSheet";
+import { validateErrorsOnLoginForm, validateWarningsOnLoginForm } from "./loginFormValidations";
+import { RenderTextField } from "./../MaterialUi/RenderField";
 
 
 class LoginForm extends React.Component{
@@ -115,27 +37,26 @@ onSubmit(values){
     }
     
     mystore.dispatch({type:"TOGGLE_LOADING", status: true});
+
+    let self = this;
     
     this.props.login(loginData)
     .then(response => { 
         let token = response.data.jwt;
-        console.log("the jwt token received is: " + token);
         localStorage.setItem("jwtToken", token);
-        console.log("decoded jwt: " + JSON.stringify(jwtDecode(token)));
-    
         mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"success", text:"You have logged in"}});
         mystore.dispatch({type:"TOGGLE_LOADING", status: false});
         mystore.dispatch(setCurrentUser(jwtDecode(token)));
-        this.setState({errors:{}, isLoading:false});
+        self.setState({errors:{}, isLoading:false});
         setAuthorizationToken(token);
-        this.context.router.history.push("/events"); 
+        self.context.router.history.push("/events"); 
 
-    }).catch(result=>{ 
-        if(result.response){
-            mystore.dispatch({type:"TOGGLE_LOADING", status: false});
-            this.setState({ errors:result.response.data.errors, isLoading:false}); 
+    }).catch(function(result){ 
+            mystore.dispatch({type:"TOGGLE_LOADING", status: false}); 
             mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to log in."}});
-            console.log(JSON.stringify(result));
+             self.setState({errors:{}, isLoading:false});
+        if(result.response){ 
+            self.setState({ errors:result.response.data.errors, isLoading:false}); 
         }   
     });
 }
@@ -149,9 +70,7 @@ onSubmit(values){
         const {errors, identifier, password, isLoading} = this.state;
         const { classes } = this.props;
         
-        return(
-
-
+        return( 
             <div className={classes.container}>
 
                 <Grid container >
@@ -167,21 +86,23 @@ onSubmit(values){
                     
 
                         <Field
-                            name="identifier"
-                            type="text"
-                            component={renderField}
-                            className={classes.textField}
-                            label="Username/Email"
-                            placeholder="email@email.com" />
+                        name="identifier"
+                        type="text"
+                        component={RenderTextField}
+                        className={classes.textField}
+                        label="Username/Email"
+                        placeholder="email@email.com" />
+
                         <br/>
                         <br/>
+
                         <Field
-                            name="password"
-                            type="password"
-                            className={classes.textField}
-                            component={renderField}
-                            label="Password"
-                            placeholder=""  />
+                        name="password"
+                        type="password"
+                        className={classes.textField}
+                        component={RenderTextField}
+                        label="Password"
+                        placeholder=""  />
                         <br/>
                         <br/>
 
@@ -190,20 +111,20 @@ onSubmit(values){
                         <Grid container className={classes.root}>
                             <Grid item md={12}>
                                 <Grid
-                                    container
-                                    className={classes.demo}
-                                    align="center"
-                                    direction="row"
-                                    justify="center">
+                                container
+                                className={classes.demo}
+                                align="center"
+                                direction="row"
+                                justify="center">
 
                                     <Button 
-                                        type="submit" 
-                                        disabled={pristine || submitting || this.state.isLoading}
-                                        color="accent" 
-                                        className={classes.button}
-                                        style = {{  
-                                        width:'100px'    
-                                        }}>
+                                    type="submit" 
+                                    disabled={pristine || submitting || this.state.isLoading}
+                                    color="accent" 
+                                    className={classes.button}
+                                    style = {{  
+                                    width:'100px'    
+                                    }}>
                                     Login
                                     </Button>
 
@@ -219,9 +140,7 @@ onSubmit(values){
                   
                 </Grid>
             </Grid>
-       </div>
-
-        
+       </div> 
         );
     }
 }

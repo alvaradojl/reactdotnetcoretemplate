@@ -85,6 +85,7 @@ namespace Backend.Web.Api.Controllers
            
         }
 
+
         // DELETE: api/ApiWithActions/5
         [ServiceFilter(typeof(TokenFilter))]
         [HttpDelete("{username}")]
@@ -101,6 +102,19 @@ namespace Backend.Web.Api.Controllers
             _eventRepository.Delete(eventId);
 
             return Ok();
+        }
+
+        // GET: api/events/Random
+        [Route("Random")]
+        [HttpGet]
+        public ActionResult Random()
+        {
+
+            var randomId = Guid.NewGuid();
+
+            var newRandomEvent = new Event() { Id=randomId, Description="The description generated is " + randomId };
+
+            return Ok(newRandomEvent);
         }
     }
 }

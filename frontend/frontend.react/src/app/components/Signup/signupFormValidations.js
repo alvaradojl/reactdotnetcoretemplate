@@ -25,9 +25,12 @@ export const validateErrorsOnSignupForm = (values) => {
             errors.passwordConfirmation="Password confirmation is required.";
         }
         else{
-            if(!Validator.equals(values.password, values.passwordConfirmation)){
-                errors.passwordConfirmation="Passwords must match.";
+            if(values.password){
+                if(!Validator.equals(values.password, values.passwordConfirmation)){
+                    errors.passwordConfirmation="Passwords must match.";
+                }
             }
+            
         }
 
         

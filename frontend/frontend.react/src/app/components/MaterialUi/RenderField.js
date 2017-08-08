@@ -3,7 +3,9 @@ import TextField from 'material-ui/TextField';
 import IntegrationAutosuggest from "./../TimezoneSuggestion/TimezoneSuggestion";
 import Typography from 'material-ui/Typography';
 import {themePalette} from "./../../styles/MaterialUi/themePalette";
-import red from 'material-ui/colors/red';
+
+import blueGrey from "material-ui/colors/blueGrey";
+import grey from "material-ui/colors/grey";
 
 export const RenderTextField = ({
   input,

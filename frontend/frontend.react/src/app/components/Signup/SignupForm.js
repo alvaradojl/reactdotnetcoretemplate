@@ -54,7 +54,7 @@ class SignupForm extends React.Component{
             mystore.dispatch({type:"TOGGLE_LOADING", status: false});
             self.context.router.history.push("/login");
         })
-        .catch(response => { 
+        .catch(result => { 
                 mystore.dispatch({type:"TOGGLE_LOADING", status: false});
                 self.setState({isLoading:false});
                 mystore.dispatch({type:"ADD_MESSAGE", message:{ type:"error", text:"An error ocurred while attempting to register."}});
@@ -149,6 +149,7 @@ class SignupForm extends React.Component{
 
                                        <Button 
                                         type="submit" 
+                                        raised 
                                         disabled={pristine || submitting || this.state.isLoading}
                                         color="accent" 
                                         className={classes.button}

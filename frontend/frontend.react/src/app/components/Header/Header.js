@@ -10,21 +10,62 @@ import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui-icons/Menu'; 
-
+import Badge from 'material-ui/Badge';
+import FolderIcon from 'material-ui-icons/Folder';
+import NotificationsIcon from "material-ui-icons/Notifications";
+import WhatshotIcon from "material-ui-icons/Whatshot";
+import PublicIcon from "material-ui-icons/Public";
+import SyncProblemIcon from "material-ui-icons/Syncproblem";
+import CallMadeIcon from "material-ui-icons/Callmade";
+import CallReceivedIcon from "material-ui-icons/Callreceived";
+import {themePalette} from "./../../styles/MaterialUi/themePalette";
+import pink from 'material-ui/colors/pink';
+import deepOrange from "material-ui/colors/deepOrange";
+import AssignmentIcon from 'material-ui-icons/Assignment';
+import Avatar from 'material-ui/Avatar';
+import amber from "material-ui/colors/amber";
+import orange from "material-ui/colors/orange"; 
+import SideMenu from "./../SideMenu/SideMenu";
+import Drawer from 'material-ui/Drawer'; 
 
 const styleSheet = createStyleSheet({
-  root: {
-    marginTop: 5,
-    width: '100%',
+    root: {
+        marginTop: "80px", 
+    },
+    appBar:{
+        backgroundColor: "#fff"
+    },
+    flex: {
+        flex: 1,
+    },
+    badge: {
+        margin: "8px",
   },
-  flex: {
-    flex: 1,
-  },
+    icon:{
+        fill: orange[500],
+    },
+    colorAvatar: {
+    margin: 10,
+    color: '#fff',
+    backgroundColor: orange[500],
+  }
 });
 
 class Header extends React.Component {
 
+    constructor(props){
+        super(props);
+        this.state= { open:false };
+        this.toggleMenu = this.toggleMenu.bind(this);
+    }
  
+
+toggleMenu(){
+    let newStatus = !(this.state.open);
+   
+    this.setState({open:newStatus});
+}
+
     onClick(e){ 
 
         this.props.logout();
@@ -34,7 +75,7 @@ class Header extends React.Component {
     render(){
         const classes = this.props.classes;
         const { isAuthenticated } = this.props.auth;
-
+  
         const userLinks = (
          
               <div>
@@ -65,20 +106,48 @@ class Header extends React.Component {
         );
 
         return(
-                <div className={classes.root}>
-                    <AppBar position="static" color="primary">
+                <div className={classes.root} >
+                    <AppBar className={classes.appBar}>
                         <Toolbar>
                             {/* <IconButton color="contrast" aria-label="Menu">
                                 <MenuIcon />
                             </IconButton> */}
+
+                            {/* <img src="./../../images/logo.png" height="65px" alt="logo"/> */}
+                            <IconButton onClick={this.toggleMenu} color="contrast" aria-label="Menu">
+                            <MenuIcon />
+                            </IconButton>
                             <Typography type="title" color="inherit" className={classes.flex}>
-                                My React App
+                                App name
                             </Typography>
-                        
+                            <Badge className={classes.badge} badgeContent={4} color="accent">
+                                <NotificationsIcon />
+                            </Badge>
+                            <Badge className={classes.badge} badgeContent={10} color="accent">
+                                <WhatshotIcon />
+                            </Badge>
+                            <Badge className={classes.badge} badgeContent={10} color="accent">
+                                <PublicIcon />
+                            </Badge>
+                             <Badge className={classes.badge} badgeContent={1} color="accent">
+                                <SyncProblemIcon />
+                            </Badge>
+                            <IconButton  aria-label="CallMade">
+                                <CallMadeIcon className={classes.icon}  />
+                            </IconButton>
+                            <IconButton aria-label="CallReceived">
+                                <CallReceivedIcon className={classes.icon} />
+                            </IconButton>
+                             <Avatar className={classes.colorAvatar}>
+                                <AssignmentIcon />
+                            </Avatar>
                                 { isAuthenticated ? userLinks : guestLinks }
                         </Toolbar>
-                    </AppBar>
-                </div> 
+                    </AppBar> 
+                     <Drawer open={this.state.open} onRequestClose={this.toggleMenu} onClick={this.toggleMenu}>
+                        <SideMenu open={this.state.open} />
+                     </Drawer> 
+               </div>
         );
     }
 }
@@ -86,6 +155,7 @@ class Header extends React.Component {
 Header.propTypes = {
     auth:PropTypes.object.isRequired,
     logout : PropTypes.func.isRequired, 
+    classes: PropTypes.object.isRequired
 }
 
 Header.contextTypes = {
@@ -93,11 +163,6 @@ Header.contextTypes = {
 }
 
 let StyledHeader = withStyles(styleSheet)(Header);
-
-// StyledHeader.propTypes = { 
-//     classes: PropTypes.object.isRequired,
-// }
-
  
 function mapStateToProps(state){
     return {

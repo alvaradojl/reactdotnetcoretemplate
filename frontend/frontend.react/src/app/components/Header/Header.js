@@ -33,7 +33,7 @@ const styleSheet = createStyleSheet({
         marginTop: "80px", 
     },
     appBar:{
-        backgroundColor: "#fff"
+        backgroundColor: "#fff", 
     },
     flex: {
         flex: 1,

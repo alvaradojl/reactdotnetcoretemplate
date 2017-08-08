@@ -25,8 +25,9 @@ export class App extends React.Component {
       
         return(  
             <div>
-                <TopProgress/>
+              
                 <Header/>
+                <TopProgress/>
                 <FlashMessagesList messages={this.props.messages} deleteMessage={deleteMessageDispatcher} />
                 <div> 
                     <Route exact path="/" component={Greetings}/>   

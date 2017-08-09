@@ -13,6 +13,7 @@ import setAuthorizationToken from "./../utils/setAuthorizationToken";
 import EventsPage from "./../components/Events/EventsPage";
 import Authenticate from "./../utils/Authenticate";
 import Footer from "./../components/Footer/Footer";
+import Infinite from "./../components/Infinite/Infinite";
 import TopProgress from "./../components/TopProgress/TopProgress";
 
 const newHistory = createBrowserHistory();
@@ -34,6 +35,7 @@ export class App extends React.Component {
                     <Route exact path="/home" component={Greetings}/>
                     <Route exact path="/greetings" component={Greetings}/>
                     <Route exact path="/events" component={Authenticate(EventsPage)}/>
+                       <Route exact path="/infinite" component={Infinite}/>
                     <Route exact path="/signup" component={SignupPage}/> 
                     <Route exact path="/login" component={LoginPage}/> 
                 </div>

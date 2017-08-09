@@ -83,6 +83,14 @@ toggleMenu(){
                 Events   
             </Button>
 
+               <Button color="contrast" className={classes.button}  href="/greetings" >
+                Greetings   
+            </Button>
+
+              <Button color="contrast" className={classes.button}  href="/infinite" >
+                Infinite   
+            </Button>
+
             <Button  color="contrast" className={classes.button} onClick={this.onClick.bind(this)} >
                 Logout 
             </Button>

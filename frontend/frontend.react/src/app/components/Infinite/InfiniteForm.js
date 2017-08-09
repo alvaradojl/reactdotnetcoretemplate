@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { InfiniteLoader, List } from 'react-virtualized'; 
+import { InfiniteLoader, List, AutoSizer, WindowScroller  } from 'react-virtualized'; 
 import map from "lodash/map";
 import axios from "axios";
 import MediaCard from "./../MediaCard/MediaCard";
+
 
 // This example assumes you have a way to know/load this information
 const remoteRowCount = 50;
@@ -45,19 +46,33 @@ export default class InfiniteForm extends React.Component{
             <InfiniteLoader
                 isRowLoaded={isRowLoaded}
                 loadMoreRows={loadMoreRows}
-                rowCount={remoteRowCount}>
+                rowCount={remoteRowCount}
+                threshold={10}>
                     {({ onRowsRendered, registerChild }) => (
-                    <List
-                        height={800}
-                        onRowsRendered={onRowsRendered}
-                        ref={registerChild}
-                        rowCount={remoteRowCount}
-                        rowHeight={170}
-                        rowRenderer={rowRenderer}
-                        width={600}
-                    />
+                          <WindowScroller>
+                            {({ height, isScrolling, scrollTop }) => (
+                                <AutoSizer disableHeight >
+                                    {({ width }) => (
+                                        <List
+                                            autoHeight 
+                                            height={height}
+                                            onRowsRendered={onRowsRendered}
+                                            ref={registerChild}
+                                            rowCount={remoteRowCount}
+                                            rowHeight={160}
+                                            rowRenderer={rowRenderer}
+                                            width={width}
+                                            scrollTop={scrollTop}
+                                        />
+                                    )}
+                                </AutoSizer>
+                            )}
+                        </WindowScroller>
                     )}
             </InfiniteLoader>
+          
+            
+
         );
     }
 }

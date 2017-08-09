@@ -107,20 +107,19 @@ namespace Backend.Web.Api.Controllers
         // GET: api/events/Random
         [Route("Random")]
         [HttpGet]
-        public ActionResult Random(int startIndex =0, int topIndex =1)
+        public ActionResult Random(int startIndex =0, int stopIndex =1)
         {
 
             List<RandomPayload> list = new List<RandomPayload>();
 
-            for (int i = startIndex; i < startIndex + topIndex; i++)
+            for (int i = startIndex; i <= stopIndex; i++)
             {
                 var randomId = Guid.NewGuid();
 
                 list.Add(new RandomPayload() {
                     Id = randomId,
                     Description = "The description generated is " + randomId,
-                    StartIndex = i,
-                    TopIndex = topIndex
+                    Index = i
                 });
             }
             return Ok(list);
@@ -136,9 +135,8 @@ namespace Backend.Web.Api.Controllers
 
         public string Description { get; set; }
 
-        public int StartIndex { get; set; }
+        public int Index { get; set; }
 
-        public int TopIndex { get; set; }
     }
 
 }

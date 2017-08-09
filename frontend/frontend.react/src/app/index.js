@@ -9,6 +9,7 @@ import setAuthorizationToken from "./utils/setAuthorizationToken";
 import {setCurrentUser} from "./actions/AuthActions";
 import jwtDecode from "jwt-decode"; 
 import "./styles/main.scss";
+import "./styles/styles.scss";
 import "./images/favicon.ico";
 import createMuiTheme from 'material-ui/styles/theme';
 import { MuiThemeProvider } from 'material-ui/styles';

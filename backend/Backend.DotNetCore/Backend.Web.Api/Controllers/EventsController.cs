@@ -12,6 +12,7 @@ using Backend.Web.Api.Data;
 using Backend.Web.Api.Filters;
 using Backend.Web.Api.Configuration;
 using Microsoft.Extensions.Options;
+using System.Net.Http;
 
 namespace Backend.Web.Api.Controllers
 {
@@ -107,22 +108,39 @@ namespace Backend.Web.Api.Controllers
         // GET: api/events/Random
         [Route("Random")]
         [HttpGet]
-        public ActionResult Random(int startIndex =0, int stopIndex =1)
+        public async Task<ActionResult> Random(int startIndex =0, int stopIndex =1)
         {
+            string seed = "TEST";
+            int page = 1;
+            int results = stopIndex - startIndex + 1; //0-based index
+            string urlTemplate = "https://randomuser.me/api/?inc=name,nat,picture&page={0}&results={1}&seed={2}";
 
-            List<RandomPayload> list = new List<RandomPayload>();
+            string finalUrl = string.Format(urlTemplate, page, results, seed);
 
-            for (int i = startIndex; i <= stopIndex; i++)
+            List<RandomPayload> finalResult = new List<RandomPayload>();
+
+            var httpClient = new HttpClient();
+
+            var httpResult = await httpClient.GetStringAsync(finalUrl);
+
+            var randomUsersReturned = Newtonsoft.Json.JsonConvert.DeserializeObject<RandomUserResult>(httpResult);
+
+            for (int i = 0; i < randomUsersReturned.results.Length; i++)
             {
                 var randomId = Guid.NewGuid();
 
-                list.Add(new RandomPayload() {
+                finalResult.Add(new RandomPayload() {
                     Id = randomId,
-                    Description = "The description generated is " + randomId,
-                    Index = i
+                    FullName = string.Format("{0} {1} {2}", 
+                                randomUsersReturned.results[i].name.title,
+                                randomUsersReturned.results[i].name.first,
+                                randomUsersReturned.results[i].name.last
+                                ),
+                    PictureUrl= randomUsersReturned.results[i].picture.large,
+                    Index = startIndex + i
                 });
             }
-            return Ok(list);
+            return Ok(finalResult);
         }
 
 
@@ -133,7 +151,9 @@ namespace Backend.Web.Api.Controllers
     {
         public Guid Id { get; set; }
 
-        public string Description { get; set; }
+        public string FullName { get; set; }
+
+        public string PictureUrl { get; set; }
 
         public int Index { get; set; }
 

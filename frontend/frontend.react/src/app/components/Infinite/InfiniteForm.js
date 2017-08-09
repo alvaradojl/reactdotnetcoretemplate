@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { InfiniteLoader, List } from 'react-virtualized'; 
 import map from "lodash/map";
 import axios from "axios";
+import MediaCard from "./../MediaCard/MediaCard";
 
 // This example assumes you have a way to know/load this information
 const remoteRowCount = 50;
@@ -20,7 +21,7 @@ function isRowLoaded ({ index }) {
   axios.get(`http://localhost:5000/api/events/random?startIndex=${startIndex}&stopIndex=${stopIndex}`)
         .then(response => {
             map(response.data, (item) => { 
-              list.push(<span>{item.id}</span>);
+              list.push(<MediaCard title={item.fullName} content={item.id} imageSource={item.pictureUrl} />);
             });
           
         });
@@ -35,9 +36,8 @@ function isRowLoaded ({ index }) {
     </div>
   )
 }
-
-
-export default class Infinite extends React.Component{
+ 
+export default class InfiniteForm extends React.Component{
  
     render(){ 
         return(
@@ -48,13 +48,13 @@ export default class Infinite extends React.Component{
                 rowCount={remoteRowCount}>
                     {({ onRowsRendered, registerChild }) => (
                     <List
-                        height={200}
+                        height={800}
                         onRowsRendered={onRowsRendered}
                         ref={registerChild}
                         rowCount={remoteRowCount}
-                        rowHeight={20}
+                        rowHeight={170}
                         rowRenderer={rowRenderer}
-                        width={300}
+                        width={600}
                     />
                     )}
             </InfiniteLoader>

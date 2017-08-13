@@ -71,9 +71,9 @@ onSubmit(values){
         const { classes } = this.props;
         
         return( 
-            <div className={classes.container}>
+       
 
-                <Grid container >
+                <Grid container className={classes.container}>
                 <Grid item md={3}>
 
                 </Grid>
@@ -141,7 +141,7 @@ onSubmit(values){
                   
                 </Grid>
             </Grid>
-       </div> 
+    
         );
     }
 }

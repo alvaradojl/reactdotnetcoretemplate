@@ -4,13 +4,17 @@ import { InfiniteLoader, List, AutoSizer, WindowScroller  } from 'react-virtuali
 import map from "lodash/map";
 import axios from "axios";
 import MediaCard from "./../MediaCard/MediaCard";
-
+import Grid from 'material-ui/Grid'; 
+import styleSheet from "./styleSheet";
+import PropTypes from "prop-types";
+import { withStyles } from 'material-ui/styles';
+import Typography from 'material-ui/Typography';
 
 // This example assumes you have a way to know/load this information
 const remoteRowCount = 50;
 
  
-export default class InfiniteForm extends React.Component{
+class InfiniteForm extends React.Component{
  
 constructor(props){
     super(props);
@@ -85,37 +89,90 @@ componentDidMount(){
 }
 
     render(){ 
-        return(
+          const { classes } = this.props;
 
-            <InfiniteLoader
-                isRowLoaded={this.isRowLoaded}
-                loadMoreRows={this.loadMoreRows}
-                rowCount={remoteRowCount}
-                minimumBatchSize={5}
-                threshold={5}>
-                    {({ onRowsRendered, registerChild }) => (
-                          <WindowScroller>
-                            {({ height, isScrolling, scrollTop }) => (
-                                <AutoSizer disableHeight >
-                                    {({ width }) => (
-                                        <List
-                                            autoHeight 
-                                            height={height}
-                                            onRowsRendered={onRowsRendered}
-                                            ref={registerChild}
-                                            rowCount={this.state.list.length}
-                                            rowHeight={160}
-                                            rowRenderer={this.rowRenderer}
-                                            width={width}
-                                            scrollTop={scrollTop}
-                                        />
-                                    )}
-                                </AutoSizer>
-                            )}
-                        </WindowScroller>
-                    )}
-            </InfiniteLoader>
+        return(
+ 
+        <Grid container className={classes.container}>
+            <Grid item md={3}>
+
+            </Grid>
+            <Grid item md={6}> 
+                <Typography type="display2" gutterBottom>
+                    Newsfeed
+                </Typography>
+
+                <InfiniteLoader
+                    isRowLoaded={this.isRowLoaded}
+                    loadMoreRows={this.loadMoreRows}
+                    rowCount={remoteRowCount}
+                    minimumBatchSize={5}
+                    threshold={5}>
+                        {({ onRowsRendered, registerChild }) => (
+                            <WindowScroller>
+                                {({ height, isScrolling, scrollTop }) => (
+                                    <AutoSizer disableHeight >
+                                        {({ width }) => (
+                                            <List
+                                                autoHeight 
+                                                height={height}
+                                                onRowsRendered={onRowsRendered}
+                                                ref={registerChild}
+                                                rowCount={this.state.list.length}
+                                                rowHeight={160}
+                                                rowRenderer={this.rowRenderer}
+                                                width={width}
+                                                scrollTop={scrollTop}
+                                            />
+                                        )}
+                                    </AutoSizer>
+                                )}
+                            </WindowScroller>
+                        )}
+                </InfiniteLoader>
+ 
+            <Grid container className={classes.root}>
+                <Grid item md={12}>
+                    <Grid
+                        container
+                        className={classes.demo}
+                        align="center"
+                        direction="row"
+                        justify="center">
+
+                            {/* <Button 
+                            type="submit" 
+                            raised 
+                            disabled={pristine || submitting || this.state.isLoading}
+                            color="accent" 
+                            className={classes.button}
+                            style = {{  
+                            width:'100px'    
+                            }}>
+                            Login
+                            </Button> */}
+
+
+                    </Grid>
+                </Grid>
+            </Grid>
+         
+        </Grid>
+        <Grid item md={3}>
+            
+        </Grid>
+    </Grid>
+
+
+         
            
         );
     }
 }
+
+
+InfiniteForm.propTypes = { 
+    classes: PropTypes.object.isRequired
+}
+
+export default withStyles(styleSheet)(InfiniteForm);

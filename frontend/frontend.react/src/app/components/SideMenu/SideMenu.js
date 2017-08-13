@@ -7,8 +7,8 @@ import { withStyles } from 'material-ui/styles';
 import Drawer from 'material-ui/Drawer'; 
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List';
 import Divider from 'material-ui/Divider';
-
-
+import { Link, NavLink, Redirect } from "react-router-dom";
+import Button from 'material-ui/Button';
 import StarIcon from 'material-ui-icons/Star';
 import SendIcon from 'material-ui-icons/Send'; 
 import DeleteIcon from 'material-ui-icons/Delete';
@@ -38,41 +38,59 @@ const styleSheet = createStyleSheet({
   listFull: {
     width: 'auto',
     flex: 'initial',
+  },
+  menuitem:{
+    textDecoration:"none"
   }
 });
 
 const firstSectionListItems = (
       <div>
-        <ListItem button>
-          <ListItemIcon>
-            <HomeIcon />
-          </ListItemIcon>
-          <ListItemText primary="Home" />
-        </ListItem>
+        
+          
+        <Link style={{  textDecoration:"none"}} to="/">
+          <ListItem button>
+            <ListItemIcon>
+              <HomeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Home" /> 
+          </ListItem>
+        </Link>
+           
+       
+      
+        <Link style={{  textDecoration:"none"}} to="/greetings">
         <ListItem button>
           <ListItemIcon>
             <StarIcon />
           </ListItemIcon>
           <ListItemText primary="Starred" />
         </ListItem>
+        </Link>
+         <Link style={{  textDecoration:"none"}} to="/signup">
         <ListItem button>
           <ListItemIcon>
             <CallMadeIcon />
           </ListItemIcon>
           <ListItemText primary="Pending Requests Received" />
         </ListItem>
+        </Link>
+         <Link style={{  textDecoration:"none"}} to="/events">
         <ListItem button>
           <ListItemIcon>
             <CallReceivedIcon />
           </ListItemIcon>
           <ListItemText primary="Pending Requests Sent" />
         </ListItem>
+        </Link>
+         <Link style={{  textDecoration:"none"}} to="/infinite">
         <ListItem button>
           <ListItemIcon>
             <HistoryIcon />
           </ListItemIcon>
           <ListItemText primary="History" />
         </ListItem>
+        </Link>
       </div>
     );
 

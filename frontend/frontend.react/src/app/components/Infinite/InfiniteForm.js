@@ -9,45 +9,90 @@ import MediaCard from "./../MediaCard/MediaCard";
 // This example assumes you have a way to know/load this information
 const remoteRowCount = 50;
 
-const list = [];
-
- const results = {};
-
-function isRowLoaded ({ index }) {
-  return !!list[index];
+ 
+export default class InfiniteForm extends React.Component{
+ 
+constructor(props){
+    super(props);
+    this.state ={
+        list:[]
+    }
+   this.isRowLoaded = this.isRowLoaded.bind(this);
+   this.loadMoreRows = this.loadMoreRows.bind(this);
+   this.rowRenderer = this.rowRenderer.bind(this);
 }
 
- function loadMoreRows ({ startIndex, stopIndex }) {
 
-  axios.get(`http://localhost:5000/api/events/random?startIndex=${startIndex}&stopIndex=${stopIndex}`)
+isRowLoaded ({ index }) {
+    console.log(`is row ${index} loaded:` + !!this.state.list[index]);
+    return !!this.state.list[index];
+}
+
+ loadMoreRows ({ startIndex, stopIndex }) {
+    console.log(`loading from ${startIndex} to ${stopIndex}`);
+    axios.get(`http://localhost:5000/api/events/random?startIndex=${startIndex}&stopIndex=${stopIndex}`)
         .then(response => {
-            map(response.data, (item) => { 
-              list.push(<MediaCard title={item.fullName} content={item.id} imageSource={item.pictureUrl} />);
-            });
-          
-        });
- }
 
- function rowRenderer ({ key, index, style}) {
+            let previousList = this.state.list;
+
+            map(response.data, (item) => {  
+                    previousList.push({
+                        fullName: item.fullName,
+                        id:item.id, 
+                        pictureUrl:item.pictureUrl
+                    });
+                     
+            });
+ 
+            this.setState({...this.state, list:previousList});
+        });
+}
+
+rowRenderer ({ key, index, style}) {
+
+let item = this.state.list[index];
+
   return (
-    <div  key={key}  style={style}>
-      {list[index]}
+    <div  key={key}  style={style}> 
+            <MediaCard title={`${index}: ${item.fullName}`} content={item.id} imageSource={item.pictureUrl} />
         <br/>
      
     </div>
   )
 }
+
+componentDidMount(){
+  
+    axios.get("http://localhost:5000/api/events/random?startIndex=0&stopIndex=4")
+        .then(response => 
+            {
+                let previousList = this.state.list;
+
+                map(response.data, (item) => { 
  
-export default class InfiniteForm extends React.Component{
- 
+                    previousList.push({
+                        fullName: item.fullName,
+                        id:item.id, 
+                        pictureUrl:item.pictureUrl
+                    }); 
+                });  
+
+                this.setState({...this.state, list:previousList});
+
+            }
+        );
+
+}
+
     render(){ 
         return(
 
             <InfiniteLoader
-                isRowLoaded={isRowLoaded}
-                loadMoreRows={loadMoreRows}
+                isRowLoaded={this.isRowLoaded}
+                loadMoreRows={this.loadMoreRows}
                 rowCount={remoteRowCount}
-                threshold={10}>
+                minimumBatchSize={5}
+                threshold={5}>
                     {({ onRowsRendered, registerChild }) => (
                           <WindowScroller>
                             {({ height, isScrolling, scrollTop }) => (
@@ -58,9 +103,9 @@ export default class InfiniteForm extends React.Component{
                                             height={height}
                                             onRowsRendered={onRowsRendered}
                                             ref={registerChild}
-                                            rowCount={remoteRowCount}
+                                            rowCount={this.state.list.length}
                                             rowHeight={160}
-                                            rowRenderer={rowRenderer}
+                                            rowRenderer={this.rowRenderer}
                                             width={width}
                                             scrollTop={scrollTop}
                                         />
@@ -70,9 +115,7 @@ export default class InfiniteForm extends React.Component{
                         </WindowScroller>
                     )}
             </InfiniteLoader>
-          
-            
-
+           
         );
     }
 }

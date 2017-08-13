@@ -10,6 +10,7 @@ import Typography from 'material-ui/Typography';
 import Button from 'material-ui/Button';
 import IconButton from 'material-ui/IconButton';
 import MenuIcon from 'material-ui-icons/Menu'; 
+import Menu, { MenuItem } from 'material-ui/Menu';
 import Badge from 'material-ui/Badge';
 import FolderIcon from 'material-ui-icons/Folder';
 import NotificationsIcon from "material-ui-icons/Notifications";
@@ -55,9 +56,22 @@ class Header extends React.Component {
 
     constructor(props){
         super(props);
-        this.state= { open:false };
+        this.state= { 
+            notificationopen:false,
+            anchorEl: undefined,
+            notificationcount:3,
+            notificationcolor:"accent"
+        };
         this.toggleMenu = this.toggleMenu.bind(this);
     }
+
+handleClick = event => {
+    this.setState({ notificationopen: true, anchorEl: event.currentTarget });
+};
+
+handleRequestClose = () => {
+    this.setState({ notificationopen: false, notificationcount:false, notificationcolor:undefined });
+};
  
 
 toggleMenu(){
@@ -128,33 +142,60 @@ toggleMenu(){
                             <Typography type="title" color="inherit" className={classes.flex}>
                                 App name
                             </Typography>
+                                 <IconButton  aria-label="NotificationsIcon">
                             <Badge className={classes.badge} badgeContent={4} color="accent">
                                 <NotificationsIcon />
                             </Badge>
-                            <Badge className={classes.badge} badgeContent={10} color="accent">
-                                <WhatshotIcon />
-                            </Badge>
-                            <Badge className={classes.badge} badgeContent={10} color="accent">
-                                <PublicIcon />
-                            </Badge>
-                             <Badge className={classes.badge} badgeContent={1} color="accent">
+                                </IconButton>
+                            <IconButton  aria-label="WhatshotIcon">
+                                <Badge className={classes.badge} badgeContent={10} color="accent">
+                                    <WhatshotIcon />
+                                </Badge>
+                             </IconButton>
+                            <IconButton  aria-label="Public">
+                                <Badge className={classes.badge} badgeContent={1} color="accent">
+                                    <PublicIcon />
+                                </Badge>
+                            </IconButton>
+                            <IconButton    
+                                aria-owns={this.state.open ? 'simple-menu' : null}
+                                aria-haspopup="true"
+                                onClick={this.handleClick}  
+                                aria-label="SyncProblem">
+                               <Badge className={classes.badge} 
+                               badgeContent={this.state.notificationcount} 
+                               color={this.state.notificationcolor}>
                                 <SyncProblemIcon />
                             </Badge>
-                            <IconButton  aria-label="CallMade">
-                                <CallMadeIcon className={classes.icon}  />
                             </IconButton>
-                            <IconButton aria-label="CallReceived">
+                            {/* <IconButton aria-label="CallReceived">
                                 <CallReceivedIcon className={classes.icon} />
                             </IconButton>
-                             <Avatar className={classes.colorAvatar}>
-                                <AssignmentIcon />
-                            </Avatar>
+                            <IconButton  aria-label="Assignment">
+                                <Avatar className={classes.colorAvatar}>
+                                    <AssignmentIcon />
+                                </Avatar>
+                            </IconButton> */}
+                          
                                 { isAuthenticated ? userLinks : guestLinks }
                         </Toolbar>
                     </AppBar> 
                      <Drawer open={this.state.open} onRequestClose={this.toggleMenu} onClick={this.toggleMenu}>
                         <SideMenu open={this.state.open} />
                      </Drawer> 
+                    <Menu
+                        id="simple-menu"
+                        anchorEl={this.state.anchorEl}
+                        open={this.state.notificationopen}
+                        onRequestClose={this.handleRequestClose} >
+                        <MenuItem onClick={this.handleRequestClose}>
+                        <Button href="/login" className={classes.button}>
+                            Notification 1
+                        </Button>
+                        </MenuItem>
+                        <MenuItem onClick={this.handleRequestClose}>Notification 2</MenuItem>
+                        <MenuItem onClick={this.handleRequestClose}>Notification 3</MenuItem>
+                    </Menu>
                </div>
         );
     }
